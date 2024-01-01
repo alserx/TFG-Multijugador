@@ -13,7 +13,7 @@ public class GameFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	@Getter
-	private BufferStrategy bufferStrategy;
+	private BufferStrategy strategy;
 
 	public GameFrame(String title) {
 		super(title);
@@ -25,6 +25,7 @@ public class GameFrame extends JFrame {
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
+		JFrame.setDefaultLookAndFeelDecorated(true);
 
 		// Renderizado activo: Nosotros le decimos cuando se pinta
 		setIgnoreRepaint(true);
@@ -39,7 +40,7 @@ public class GameFrame extends JFrame {
 		int tries = 100;
 		while (tries-- > 0) {
 			try {
-				createBufferStrategy(2);
+				this.createBufferStrategy(2);
 				break;
 			} catch (Exception e) {
 				return false;
@@ -48,11 +49,9 @@ public class GameFrame extends JFrame {
 		if (tries <= 0) {
 			System.err.println("No pude crear la BufferStrategy");
 			return false;
-		} else {
-			System.out.println("BufferStrategy creada tras " + (100 - tries) + " intentos.");
 		}
 
-		bufferStrategy = getBufferStrategy();
+		strategy = this.getBufferStrategy();
 		return true;
 	}
 

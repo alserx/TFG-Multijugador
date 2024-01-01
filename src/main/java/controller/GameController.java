@@ -2,8 +2,8 @@ package controller;
 
 import java.awt.Graphics2D;
 
+import logic.game.objects.Cell;
 import lombok.Getter;
-import view.GameGraphics;
 
 public class GameController implements Runnable {
 	// Controllers
@@ -14,7 +14,7 @@ public class GameController implements Runnable {
 
 	// View
 	@Getter
-	private GameGraphics gameGraphics;
+	private GraphicsController gameGraphics;
 
 	// Time
 	private long lastFrameTime = 0;
@@ -22,7 +22,7 @@ public class GameController implements Runnable {
 	private double deltaTime = 0;
 
 	public GameController() {
-		gameGraphics = new GameGraphics();
+		gameGraphics = new GraphicsController();
 		inputController = new InputController();
 
 	}
@@ -59,6 +59,10 @@ public class GameController implements Runnable {
 				gameGraphics.prepareFrame();
 				try {
 					// Render de la logica
+					cell.render(gameGraphics);
+
+					gameGraphics.drawSquare(0xFF0000, 200, 200, 100, 10);
+					gameGraphics.drawCircle(0x20FFFF, 205, 205, 90, 10);
 				}
 
 				finally {
@@ -69,4 +73,6 @@ public class GameController implements Runnable {
 		} while (gameGraphics.getFrame().getBufferStrategy().contentsLost());
 	}
 
+	// TEST
+	Cell cell = new Cell();
 }
