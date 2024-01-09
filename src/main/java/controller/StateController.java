@@ -2,12 +2,26 @@ package controller;
 
 import java.util.Stack;
 
+import logic.states.MenuState;
 import logic.states.State;
-import lombok.Getter;
 
 public class StateController {
-	@Getter
 	private Stack<State> states;
+	private GameController gameController;
+
+	public StateController() {
+		states = new Stack<State>();
+	}
+
+	public boolean init(GameController gameController) {
+		this.gameController = gameController;
+		if (this.gameController == null)
+			return false;
+
+		states.push(new MenuState(this.gameController));
+
+		return true;
+	}
 
 	public State currentState() {
 		if (!states.isEmpty())

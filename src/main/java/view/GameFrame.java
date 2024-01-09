@@ -1,5 +1,7 @@
 package view;
 
+import java.awt.Dimension;
+import java.awt.Insets;
 import java.awt.image.BufferStrategy;
 
 import javax.swing.JFrame;
@@ -53,6 +55,14 @@ public class GameFrame extends JFrame {
 
 		strategy = this.getBufferStrategy();
 		return true;
+	}
+
+	public int getPanelWidth() {
+		return (int) getContentPane().getSize().getWidth();
+	}
+
+	public int getPanelHeight() {
+		return (int) getContentPane().getSize().getHeight();
 	}
 
 }

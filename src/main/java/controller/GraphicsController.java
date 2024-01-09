@@ -3,6 +3,8 @@ package controller;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
+import java.awt.Point;
 
 import lombok.Getter;
 import view.GameFrame;
@@ -28,12 +30,18 @@ public class GraphicsController {
 	 * @param mainController referencia al controlador del juego
 	 * @return true si ha salido todo bien, false en caso contrario
 	 */
-	public boolean init(GameController mainController) {
+	public boolean init(GameController mainController, int width, int height) {
+		Point centerPoint = GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
 
-		frame.addMouseListener(mainController.getInputController());
-		frame.addMouseMotionListener(mainController.getInputController());
+		frame.getContentPane().addMouseListener(mainController.getInputController());
+		frame.getContentPane().addMouseMotionListener(mainController.getInputController());
 
-		return frame.init(600, 480);
+		int posX = centerPoint.x - width / 2;
+		int posY = centerPoint.y - height / 2;
+
+		frame.setLocation(posX, posY);
+
+		return frame.init(width, height);
 	}
 
 	/**
@@ -45,7 +53,6 @@ public class GraphicsController {
 //			;
 
 		graphics = (Graphics2D) frame.getStrategy().getDrawGraphics();
-
 	}
 
 	/**
@@ -56,12 +63,14 @@ public class GraphicsController {
 	}
 
 	/**
+	 * 
 	 * Dibuja un circulo
 	 * 
-	 * @param color    Color de la circunferencia
-	 * @param x        Posicion en el eje X
-	 * @param y        Posiciion en el eje Y
-	 * @param diameter Diametro del circulo
+	 * @param color       Color de la circunferencia
+	 * @param x           Posicion en el eje X
+	 * @param y           Posiciion en el eje Y
+	 * @param diameter    Diametro del circulo
+	 * @param strokeWidth Ancho de la linea de dibujado
 	 */
 	public void drawCircle(int color, int x, int y, int diameter, int strokeWidth) {
 		graphics.setColor(new Color(color));
@@ -70,6 +79,15 @@ public class GraphicsController {
 		graphics.drawOval(x, y, diameter, diameter);
 	}
 
+	/**
+	 * Dibuja un cuadrado
+	 * 
+	 * @param color       Color de la linea
+	 * @param x           Posicion en el eje X
+	 * @param y           Posicion en el eje Y
+	 * @param side        Tamaño del lado del cuadrado
+	 * @param strokeWidth Ancho de la linea de dibujado
+	 */
 	public void drawSquare(int color, int x, int y, int side, int strokeWidth) {
 		graphics.setColor(new Color(color));
 		graphics.setStroke(new BasicStroke(strokeWidth));
@@ -77,11 +95,28 @@ public class GraphicsController {
 		graphics.drawRect(x, y, side, side);
 	}
 
-	public void drawCross(int color, int x1, int y1, int x2, int y2, int strokeWidth) {
+	/**
+	 * Dibuja una cruz
+	 * 
+	 * @param color       Color de la linea
+	 * @param x           Posicion en el eje X
+	 * @param y           Posicion en el eje Y
+	 * @param size        Tamaño de la cruz
+	 * @param strokeWidth Ancho de la linea de dibujado
+	 */
+	public void drawCross(int color, int x, int y, int size, int strokeWidth) {
 		graphics.setColor(new Color(color));
 		graphics.setStroke(new BasicStroke(strokeWidth));
 
-		graphics.drawLine(x1, y1, x2, y2);
-		graphics.drawLine(x1, y2, x2, y1);
+		graphics.drawLine(x, y, x + size, y + size);
+		graphics.drawLine(x, y + size, x + size, y);
+	}
+
+	int getWidth() {
+		return frame.getPanelWidth();
+	}
+
+	int getHeight() {
+		return frame.getPanelHeight();
 	}
 }
