@@ -1,6 +1,9 @@
 package logic;
 
+import java.util.List;
+
 import controller.GraphicsController;
+import logic.enums.UserEvent;
 
 public interface GameObject {
 	/**
@@ -16,5 +19,5 @@ public interface GameObject {
 	/**
 	 * Handle the input of the actual object
 	 */
-	public void handleInput();
+	public void handleInput(List<UserEvent> userEvents);
 }

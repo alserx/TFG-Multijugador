@@ -11,17 +11,19 @@ public class GameState implements State {
 
 	private GameController gameController;
 	private ArrayList<GameObject> objects;
-	private Board board;
+	// private Board board;
 
 	public GameState(GameController gameController) {
 		this.gameController = gameController;
 		objects = new ArrayList<GameObject>();
-		board = new Board(300 - 100, 150, 200);
+		Board board = new Board(300 - 84, 200 - 84, 250, gameController);
+
+		objects.add(board);
 	}
 
 	@Override
 	public void update(double deltaTime) {
-		board.update(deltaTime);
+		// board.update(deltaTime);
 
 		objects.forEach(o -> o.update(deltaTime));
 
@@ -29,7 +31,7 @@ public class GameState implements State {
 
 	@Override
 	public void render(GraphicsController graphics) {
-		board.render(graphics);
+		// board.render(graphics);
 
 		objects.forEach(o -> o.render(graphics));
 
@@ -37,7 +39,7 @@ public class GameState implements State {
 
 	@Override
 	public void handleInput() {
-		objects.forEach(o -> o.handleInput());
+		objects.forEach(o -> o.handleInput(gameController.getInputController().getUserEvents()));
 	}
 
 }

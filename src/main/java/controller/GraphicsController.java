@@ -6,6 +6,8 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 
+import javax.swing.JFrame;
+
 import lombok.Getter;
 import view.GameFrame;
 
@@ -33,8 +35,8 @@ public class GraphicsController {
 	public boolean init(GameController mainController, int width, int height) {
 		Point centerPoint = GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
 
-		frame.getContentPane().addMouseListener(mainController.getInputController());
-		frame.getContentPane().addMouseMotionListener(mainController.getInputController());
+		frame.addMouseListener(mainController.getInputController());
+		frame.addMouseMotionListener(mainController.getInputController());
 
 		int posX = centerPoint.x - width / 2;
 		int posY = centerPoint.y - height / 2;

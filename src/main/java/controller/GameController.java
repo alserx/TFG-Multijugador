@@ -3,6 +3,7 @@ package controller;
 import logic.game.objects.Cell;
 import logic.states.GameState;
 import lombok.Getter;
+import lombok.Setter;
 
 public class GameController implements Runnable {
 	// Controllers
@@ -23,7 +24,8 @@ public class GameController implements Runnable {
 
 	// Game variable
 	@Getter
-	private int playerTurn = 0;
+	@Setter
+	private int playerTurn = 1;
 
 	public GameController() {
 		graphicsController = new GraphicsController();
@@ -65,7 +67,7 @@ public class GameController implements Runnable {
 	private void paint() {
 		// TEST
 		Cell cell = new Cell(FRAME_WIDTH - graphicsController.getWidth() + 20,
-				FRAME_HEIGHT - graphicsController.getHeight() + 20, 40);
+				FRAME_HEIGHT - graphicsController.getHeight() + 20, 40, this);
 
 		// Bucle principal de renderizado
 		do {
