@@ -67,8 +67,8 @@ public class Cell implements GameObject {
 	@Override
 	public void render(GraphicsController graphics) {
 
-		// Debug
-		graphics.drawSquare(0x00FF00, position.x, position.y, 2, 5);
+//		 Debug
+//		graphics.drawSquare(0x00FF00, position.x, position.y, 2, 5);
 
 		graphics.drawSquare(0x000000, position.x - size / 2, position.y - size / 2, size, 5);
 

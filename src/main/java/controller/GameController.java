@@ -15,6 +15,7 @@ public class GameController implements Runnable {
 	private GraphicsController graphicsController;
 
 	// View
+	@Getter
 	private final int FRAME_WIDTH = 600, FRAME_HEIGHT = 400;
 
 	// Time
@@ -51,7 +52,7 @@ public class GameController implements Runnable {
 
 		while (true) {
 			updateDeltaTime();
-			stateController.currentState().handleInput();
+			stateController.currentState().handleInput(inputController.getUserEvents());
 			stateController.currentState().update(deltaTime);
 			paint();
 		}
@@ -75,12 +76,6 @@ public class GameController implements Runnable {
 				graphicsController.prepareFrame();
 				try {
 					// Render de la logica
-//					cell.render(graphicsController);
-//
-//					graphicsController.drawSquare(0xFF0000, 200, 200, 100, 10);
-//					graphicsController.drawCircle(0x20FFFF, 205, 205, 90, 10);
-//					graphicsController.drawCross(0x0000FF, 100, 200, 50, 10);
-
 					stateController.currentState().render(graphicsController);
 				}
 

@@ -1,10 +1,12 @@
 package logic.states;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import controller.GameController;
 import controller.GraphicsController;
 import logic.GameObject;
+import logic.enums.UserEvent;
 import logic.game.objects.Board;
 
 public class GameState implements State {
@@ -16,7 +18,8 @@ public class GameState implements State {
 	public GameState(GameController gameController) {
 		this.gameController = gameController;
 		objects = new ArrayList<GameObject>();
-		Board board = new Board(300 - 84, 200 - 84, 250, gameController);
+		Board board = new Board(gameController.getFRAME_WIDTH() / 2, gameController.getFRAME_HEIGHT() / 2,
+				gameController);
 
 		objects.add(board);
 	}
@@ -38,8 +41,8 @@ public class GameState implements State {
 	}
 
 	@Override
-	public void handleInput() {
-		objects.forEach(o -> o.handleInput(gameController.getInputController().getUserEvents()));
+	public void handleInput(List<UserEvent> userEvents) {
+		objects.forEach(o -> o.handleInput(userEvents));
 	}
 
 }

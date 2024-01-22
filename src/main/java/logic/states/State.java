@@ -1,6 +1,9 @@
 package logic.states;
 
+import java.util.List;
+
 import controller.GraphicsController;
+import logic.enums.UserEvent;
 
 public interface State {
 	/**
@@ -16,5 +19,5 @@ public interface State {
 	/**
 	 * Handle the input of the actual state
 	 */
-	public void handleInput();
+	public void handleInput(List<UserEvent> userEvents);
 }

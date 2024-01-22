@@ -39,7 +39,7 @@ public class InputController implements MouseInputListener {
 
 		events.add(currentEvent);
 
-		//System.out.println("Click en X: " + e.getX() + " Y: " + e.getY());
+		System.out.println("Click en X: " + e.getX() + " Y: " + e.getY());
 
 	}
 

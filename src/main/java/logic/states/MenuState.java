@@ -1,10 +1,12 @@
 package logic.states;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import controller.GameController;
 import controller.GraphicsController;
 import logic.GameObject;
+import logic.enums.UserEvent;
 
 public class MenuState implements State {
 	private GameController gameController;
@@ -28,7 +30,7 @@ public class MenuState implements State {
 	}
 
 	@Override
-	public void handleInput() {
+	public void handleInput(List<UserEvent> userEvents) {
 		// TODO Auto-generated method stub
 
 	}
