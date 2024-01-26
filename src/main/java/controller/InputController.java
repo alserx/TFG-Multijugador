@@ -22,6 +22,9 @@ public class InputController implements MouseInputListener {
 		return true;
 	}
 
+	/**
+	 * @return The current input list
+	 */
 	public synchronized List<UserEvent> getUserEvents() {
 		if (!events.isEmpty()) {
 			List<UserEvent> userEvents = new ArrayList<>(events);
@@ -37,6 +40,7 @@ public class InputController implements MouseInputListener {
 		currentEvent.setX(e.getX());
 		currentEvent.setY(e.getY());
 
+		// Inserta un nuevo evento con la posicion en la que el usuario ha hecho click
 		events.add(currentEvent);
 
 		System.out.println("Click en X: " + e.getX() + " Y: " + e.getY());

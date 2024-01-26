@@ -60,8 +60,6 @@ public class Cell implements GameObject {
 
 	@Override
 	public void update(double deltaTime) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

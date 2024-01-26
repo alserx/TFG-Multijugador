@@ -11,12 +11,9 @@ import logic.game.objects.Board;
 
 public class GameState implements State {
 
-	private GameController gameController;
 	private ArrayList<GameObject> objects;
-	// private Board board;
 
 	public GameState(GameController gameController) {
-		this.gameController = gameController;
 		objects = new ArrayList<GameObject>();
 		Board board = new Board(gameController.getFRAME_WIDTH() / 2, gameController.getFRAME_HEIGHT() / 2,
 				gameController);
@@ -26,16 +23,12 @@ public class GameState implements State {
 
 	@Override
 	public void update(double deltaTime) {
-		// board.update(deltaTime);
-
 		objects.forEach(o -> o.update(deltaTime));
 
 	}
 
 	@Override
 	public void render(GraphicsController graphics) {
-		// board.render(graphics);
-
 		objects.forEach(o -> o.render(graphics));
 
 	}

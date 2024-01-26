@@ -13,18 +13,23 @@ import lombok.Setter;
 
 public class Board implements GameObject {
 
+	// Filas y columnas
 	private final int BOARD_ROWS = 3, BOARD_COLS = 3;
 
+	// Tablero
 	@Getter
 	private Cell[][] cells;
 
+	// Posicion del tablero en la pantalla
 	@Getter
 	@Setter
 	private Point position;
 
+	// Dimensiones del tablero
 	@Getter
 	private final int size;
 
+	// Dimensiones de las celdas
 	private int cellSize;
 
 	private Board(GameController gameController) {
@@ -81,6 +86,11 @@ public class Board implements GameObject {
 		}
 	}
 
+	/**
+	 * Creates a new centered board based on the current window dimensions
+	 * 
+	 * @param gameController the GameController to extract the frame information
+	 */
 	private void initBoard(GameController gameController) {
 
 		for (int row = 0; row < BOARD_ROWS; row++) {
@@ -171,6 +181,11 @@ public class Board implements GameObject {
 		return checkFirstDiagonal() || checkSecondDiagonal();
 	}
 
+	/**
+	 * Check if there is a TicTacToe in the diagonal
+	 * 
+	 * @return true if one of the player wins, false in other case
+	 */
 	private boolean checkSecondDiagonal() {
 		CellState prevState = CellState.EMPTY;
 		boolean win = true;
@@ -196,6 +211,11 @@ public class Board implements GameObject {
 		return win;
 	}
 
+	/**
+	 * Checks if there is a TicTacToe in the first diagonal
+	 * 
+	 * @return true if one of the players wins, false in other case
+	 */
 	private boolean checkFirstDiagonal() {
 		CellState prevState = CellState.EMPTY;
 

@@ -1,10 +1,13 @@
 package controller;
 
-import logic.game.objects.Cell;
 import logic.states.GameState;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * The main Controller, it manages all the game loop: handle input, update and
+ * render
+ */
 public class GameController implements Runnable {
 	// Controllers
 	@Getter
@@ -34,6 +37,11 @@ public class GameController implements Runnable {
 		stateController = new StateController();
 	}
 
+	/**
+	 * Initializes the rest of the modules to get the game running
+	 * 
+	 * @return true if the initialization is successful, false in other case
+	 */
 	private boolean init() {
 		if (!graphicsController.init(this, FRAME_WIDTH, FRAME_HEIGHT) || !inputController.init(this)
 				|| !stateController.init(this))
@@ -44,20 +52,32 @@ public class GameController implements Runnable {
 
 	@Override
 	public void run() {
+		// Inicia el controllador si no funciona acaba el juego
 		if (!init())
 			return;
 
 		// Inicializar estado
 		stateController.pushState(new GameState(this));
 
+		// Bucle principal
 		while (true) {
+
 			updateDeltaTime();
+
+			// Llama al input del estado
 			stateController.currentState().handleInput(inputController.getUserEvents());
+
+			// Actualiza el estado
 			stateController.currentState().update(deltaTime);
+
+			// Pinta el estado usando una estrategia de doble bufer
 			paint();
 		}
 	}
 
+	/**
+	 * Calculate the frame rate
+	 */
 	private void updateDeltaTime() {
 		currentTime = System.nanoTime();
 		long nanoElapsedTime = currentTime - lastFrameTime;
@@ -65,11 +85,10 @@ public class GameController implements Runnable {
 		deltaTime = (double) nanoElapsedTime / 1.0E9;
 	}
 
+	/**
+	 * Paint the current game state
+	 */
 	private void paint() {
-		// TEST
-		Cell cell = new Cell(FRAME_WIDTH - graphicsController.getWidth() + 20,
-				FRAME_HEIGHT - graphicsController.getHeight() + 20, 40, this);
-
 		// Bucle principal de renderizado
 		do {
 			do {

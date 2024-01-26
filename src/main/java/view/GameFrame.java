@@ -1,7 +1,5 @@
 package view;
 
-import java.awt.Dimension;
-import java.awt.Insets;
 import java.awt.image.BufferStrategy;
 
 import javax.swing.JFrame;
@@ -22,6 +20,13 @@ public class GameFrame extends JFrame {
 
 	}
 
+	/**
+	 * Creates a new Frame with the given parameters
+	 * 
+	 * @param width  Frame width
+	 * @param height Frame height
+	 * @return true if successful initialization
+	 */
 	public boolean init(int width, int height) {
 		setSize(width, height);
 
@@ -29,7 +34,7 @@ public class GameFrame extends JFrame {
 		setVisible(true);
 		JFrame.setDefaultLookAndFeelDecorated(true);
 
-		// Renderizado activo: Nosotros le decimos cuando se pinta
+		// Renderizado activo, le decimos cuando se pinta
 		setIgnoreRepaint(true);
 
 		if (!createBufferStrategy())
@@ -38,6 +43,11 @@ public class GameFrame extends JFrame {
 		return true;
 	}
 
+	/**
+	 * Creates a double buffer render strategy
+	 * 
+	 * @return true if the strategy is created, false in any other case
+	 */
 	private boolean createBufferStrategy() {
 		int tries = 100;
 		while (tries-- > 0) {
@@ -57,10 +67,16 @@ public class GameFrame extends JFrame {
 		return true;
 	}
 
+	/**
+	 * @return The panel width
+	 */
 	public int getPanelWidth() {
 		return (int) getContentPane().getSize().getWidth();
 	}
 
+	/**
+	 * @return The panel heught
+	 */
 	public int getPanelHeight() {
 		return (int) getContentPane().getSize().getHeight();
 	}
