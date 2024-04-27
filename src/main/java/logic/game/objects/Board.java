@@ -8,6 +8,7 @@ import controller.GraphicsController;
 import logic.GameObject;
 import logic.enums.CellState;
 import logic.enums.UserEvent;
+import logic.states.GameState;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,28 +33,28 @@ public class Board implements GameObject {
 	// Dimensiones de las celdas
 	private int cellSize;
 
-	private Board(GameController gameController) {
+	private Board(GameState game, int size) {
 		cells = new Cell[BOARD_ROWS][BOARD_COLS];
 		position = new Point();
-		size = 250;
+		this.size = size;
 	}
 
-	public Board(int x, int y, GameController gameController) {
-		this(gameController);
+	public Board(int x, int y, GameState game, int size) {
+		this(game, size);
 		this.position = new Point(x - size / 3, y - size / 3);
 
 		cellSize = (int) (Math.min(size / BOARD_COLS, size / BOARD_ROWS));
 
-		initBoard(gameController);
+		initBoard(game);
 	}
 
-	public Board(Point position, GameController gameController) {
-		this(gameController);
+	public Board(Point position, GameState game, int size) {
+		this(game, size);
 
 		this.position.x = position.x - size / 3;
 		this.position.y = position.y - size / 3;
 
-		initBoard(gameController);
+		initBoard(game);
 	}
 
 	@Override
@@ -91,12 +92,12 @@ public class Board implements GameObject {
 	 * 
 	 * @param gameController the GameController to extract the frame information
 	 */
-	private void initBoard(GameController gameController) {
+	private void initBoard(GameState game) {
 
 		for (int row = 0; row < BOARD_ROWS; row++) {
 			for (int col = 0; col < BOARD_COLS; col++) {
 				cells[row][col] = new Cell((int) (row * size / BOARD_ROWS + position.getX()),
-						(int) (col * size / BOARD_COLS + position.getY()), cellSize, gameController);
+						(int) (col * size / BOARD_COLS + position.getY()), cellSize, game);
 			}
 		}
 	}
@@ -250,5 +251,24 @@ public class Board implements GameObject {
 	 */
 	public boolean checkWin() {
 		return checkRows() || checkCols() || checkDiagonals();
+	}
+
+	/**
+	 * Check if is a tie
+	 * 
+	 * @return true if there is a tie false in other case
+	 */
+	public boolean checkDraw() {
+		for (int row = 0; row < BOARD_ROWS; row++) {
+			for (int col = 0; col < BOARD_COLS; col++) {
+				if (cells[row][col].getState() == CellState.EMPTY)
+					return false;
+			}
+		}
+
+		if (checkWin())
+			return false;
+
+		return true;
 	}
 }

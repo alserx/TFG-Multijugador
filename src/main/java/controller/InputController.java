@@ -79,8 +79,12 @@ public class InputController implements MouseInputListener {
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		// TODO Auto-generated method stub
+		UserEvent currentEvent = UserEvent.MOUSE_MOVED;
+		currentEvent.setX(e.getX());
+		currentEvent.setY(e.getY());
 
+		// Inserta un nuevo evento con la posicion del raton
+		events.add(currentEvent);
 	}
 
 }

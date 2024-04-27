@@ -1,5 +1,6 @@
 package controller;
 
+import logic.game.objects.Cell;
 import logic.states.GameState;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,17 +20,12 @@ public class GameController implements Runnable {
 
 	// View
 	@Getter
-	private final int FRAME_WIDTH = 600, FRAME_HEIGHT = 400;
+	private final int FRAME_WIDTH = 800, FRAME_HEIGHT = 600;
 
 	// Time
 	private long lastFrameTime = 0;
 	private long currentTime = 0;
 	private double deltaTime = 0;
-
-	// Game variable
-	@Getter
-	@Setter
-	private int playerTurn = 1;
 
 	public GameController() {
 		graphicsController = new GraphicsController();
@@ -64,14 +60,14 @@ public class GameController implements Runnable {
 
 			updateDeltaTime();
 
-			// Llama al input del estado
-			stateController.currentState().handleInput(inputController.getUserEvents());
-
 			// Actualiza el estado
 			stateController.currentState().update(deltaTime);
 
 			// Pinta el estado usando una estrategia de doble bufer
 			paint();
+
+			// Llama al input del estado
+			stateController.currentState().handleInput(inputController.getUserEvents());
 		}
 	}
 
@@ -94,6 +90,8 @@ public class GameController implements Runnable {
 			do {
 				graphicsController.prepareFrame();
 				try {
+					graphicsController.clear();
+
 					// Render de la logica
 					stateController.currentState().render(graphicsController);
 				}

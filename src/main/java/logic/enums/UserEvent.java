@@ -7,7 +7,7 @@ import lombok.Setter;
  * User input events
  */
 public enum UserEvent {
-	CLICK;
+	CLICK, MOUSE_MOVED;
 
 	@Getter
 	@Setter

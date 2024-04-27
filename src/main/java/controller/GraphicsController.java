@@ -2,11 +2,10 @@ package controller;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
-
-import javax.swing.JFrame;
 
 import lombok.Getter;
 import view.GameFrame;
@@ -98,6 +97,30 @@ public class GraphicsController {
 	}
 
 	/**
+	 * Dibuja un rectangulo
+	 * 
+	 * @param color       Color de la linea
+	 * @param x           Posicion en el eje X
+	 * @param y           Posicion en el eje Y
+	 * @param side        Tamaño del lado del cuadrado
+	 * @param strokeWidth Ancho de la linea de dibujado
+	 */
+	public void drawRect(int color, int x, int y, int width, int height, int strokeWidth) {
+		graphics.setColor(new Color(color));
+		graphics.setStroke(new BasicStroke(strokeWidth));
+
+		graphics.drawRect(x, y, width, height);
+	}
+
+	public void drawBorderedRect(int backgroundColor, int borderColor, int x, int y, int width, int height,
+			int strokeWidth) {
+		graphics.setColor(new Color(backgroundColor));
+		graphics.fillRect(x, y, width, height);
+
+		drawRect(borderColor, x, y, width, height, strokeWidth);
+	}
+
+	/**
 	 * Dibuja una cruz
 	 * 
 	 * @param color       Color de la linea
@@ -120,5 +143,30 @@ public class GraphicsController {
 
 	int getHeight() {
 		return frame.getPanelHeight();
+	}
+
+	public void drawText(String text, int color, int x, int y, int size) {
+		graphics.setColor(new Color(color));
+
+		setFontSize((float) size);
+
+		graphics.drawString(text, x, y);
+	}
+
+	public void setFontSize(float size) {
+		Font resizedFont = graphics.getFont().deriveFont(size);
+		graphics.setFont(resizedFont);
+	}
+
+	public int getStringWidth(String text) {
+		return graphics.getFontMetrics().stringWidth(text);
+	}
+
+	public int getStringHeight() {
+		return graphics.getFontMetrics().getHeight();
+	}
+
+	public void clear() {
+		graphics.clearRect(0, 0, getWidth(), getHeight());
 	}
 }

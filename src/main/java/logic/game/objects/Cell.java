@@ -8,6 +8,7 @@ import controller.GraphicsController;
 import logic.GameObject;
 import logic.enums.CellState;
 import logic.enums.UserEvent;
+import logic.states.GameState;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,7 +25,9 @@ public class Cell implements GameObject {
 	@Setter
 	private int size;
 
-	private GameController gameController;
+	private boolean blocked = false;
+
+	private GameState game;
 
 	private Cell() {
 		this.state = CellState.EMPTY;
@@ -32,27 +35,29 @@ public class Cell implements GameObject {
 		this.position = new Point();
 	}
 
-	public Cell(Point position, int size, GameController gameController) {
+	public Cell(Point position, int size, GameState game) {
 		this();
 		this.position = position;
 		this.size = size;
 
-		this.gameController = gameController;
+		this.game = game;
 	}
 
-	public Cell(int x, int y, int size, GameController gameController) {
+	public Cell(int x, int y, int size, GameState game) {
 		this();
 		this.position = new Point(x, y);
 		this.size = size;
 
-		this.gameController = gameController;
+		this.game = game;
 	}
 
 	@Override
 	public void handleInput(List<UserEvent> userEvents) {
 		for (UserEvent event : userEvents) {
-			if (clickInside(new Point(event.getX(), event.getY()))) {
-				performClick(gameController.getPlayerTurn());
+			if (event == UserEvent.CLICK) {
+				if (clickInside(new Point(event.getX(), event.getY()))) {
+					performClick(game.getPlayerTurn(), game.getSelectedCell());
+				}
 			}
 		}
 
@@ -64,15 +69,10 @@ public class Cell implements GameObject {
 
 	@Override
 	public void render(GraphicsController graphics) {
-
-//		 Debug
-//		graphics.drawSquare(0x00FF00, position.x, position.y, 2, 5);
-
 		graphics.drawSquare(0x000000, position.x - size / 2, position.y - size / 2, size, 5);
 
 		int figureSize = (int) (size * 0.7);
 		switch (state) {
-
 		case CROSS:
 			graphics.drawCross(0x00F00FF, position.x - figureSize / 2, position.y - figureSize / 2, figureSize, 10);
 			break;
@@ -81,7 +81,7 @@ public class Cell implements GameObject {
 			graphics.drawCircle(0xFF0000, position.x - figureSize / 2, position.y - figureSize / 2, figureSize, 10);
 			break;
 
-		default:
+		case EMPTY:
 			break;
 		}
 	}
@@ -91,15 +91,27 @@ public class Cell implements GameObject {
 	 * 
 	 * @param playerTurn El jugador que realiza el movimiento
 	 */
-	public void performClick(int playerTurn) {
-		if (state == CellState.EMPTY)
+	private void performClick(int playerTurn, Cell selectedCell) {
+		if (state == CellState.EMPTY) {
 			if (playerTurn == 1) {
 				state = CellState.CROSS;
-				gameController.setPlayerTurn(2);
+
+				if (selectedCell != null && selectedCell.getState() == state) {
+					selectedCell.setState(CellState.EMPTY);
+				}
+
+				game.setSelectedCell(this);
 			} else if (playerTurn == 2) {
 				state = CellState.CIRCLE;
-				gameController.setPlayerTurn(1);
+				if (selectedCell != null && selectedCell.getState() == state) {
+					selectedCell.setState(CellState.EMPTY);
+				}
+
+				game.setSelectedCell(this);
 			}
+		} else if (!blocked) {
+			state = CellState.EMPTY;
+		}
 	}
 
 	/**
@@ -108,14 +120,13 @@ public class Cell implements GameObject {
 	 * @param clickPosition la posicion del click
 	 * @return true si se hace click dentro, false en otro caso
 	 */
-	public boolean clickInside(Point clickPosition) {
-		if (clickPosition.x >= position.x - size / 2 && clickPosition.x <= position.x + size / 2
-				&& clickPosition.y >= position.y - size / 2 && clickPosition.y <= position.y + size / 2) {
-			System.out.println("Click Dentro!!");
-			return true;
-		}
+	private boolean clickInside(Point clickPosition) {
+		return clickPosition.x >= position.x - size / 2 && clickPosition.x <= position.x + size / 2
+				&& clickPosition.y >= position.y - size / 2 && clickPosition.y <= position.y + size / 2;
+	}
 
-		return false;
+	public void block() {
+		blocked = true;
 	}
 
 }
