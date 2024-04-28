@@ -158,11 +158,13 @@ public class GraphicsController {
 		graphics.setFont(resizedFont);
 	}
 
-	public int getStringWidth(String text) {
+	public int getStringWidth(String text, int fontSize) {
+		setFontSize((float) fontSize);
 		return graphics.getFontMetrics().stringWidth(text);
 	}
 
-	public int getStringHeight() {
+	public int getStringHeight(int fontSize) {
+		setFontSize((float) fontSize);
 		return graphics.getFontMetrics().getHeight();
 	}
 

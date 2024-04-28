@@ -26,7 +26,7 @@ public class GameButton implements GameObject {
 	private int backgroundColor;
 	private int hoverColor;
 	private int textColor;
-	private int textSize = 14;
+	private int fontSize = 14;
 
 	private boolean hovered;
 
@@ -54,7 +54,7 @@ public class GameButton implements GameObject {
 		this.backgroundColor = backgroundColor;
 		this.textColor = foregroundColor;
 		this.hoverColor = hoverColor;
-		this.textSize = textSize;
+		this.fontSize = textSize;
 		this.hovered = false;
 	}
 
@@ -70,12 +70,12 @@ public class GameButton implements GameObject {
 		else
 			graphics.drawBorderedRect(hoverColor, textColor, position.x, position.y, width, height, 2);
 
-		int textWidth = graphics.getStringWidth(text);
-		int textHeight = graphics.getStringHeight();
+		int textWidth = graphics.getStringWidth(text, fontSize);
+		int textHeight = graphics.getStringHeight(fontSize);
 		int textX = position.x + (width - textWidth) / 2;
-		int textY = position.y + (height - textHeight) / 2 + textHeight;
+		int textY = position.y + (height - textHeight) / 2 + textHeight / 2;
 
-		graphics.drawText(text, textColor, textX, textY, textSize);
+		graphics.drawText(text, textColor, textX, textY, fontSize);
 	}
 
 	@Override

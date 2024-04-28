@@ -3,7 +3,6 @@ package logic.game.objects;
 import java.awt.Point;
 import java.util.List;
 
-import controller.GameController;
 import controller.GraphicsController;
 import logic.GameObject;
 import logic.enums.CellState;
@@ -111,6 +110,7 @@ public class Cell implements GameObject {
 			}
 		} else if (!blocked) {
 			state = CellState.EMPTY;
+			game.setSelectedCell(null);
 		}
 	}
 

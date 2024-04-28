@@ -1,7 +1,6 @@
 package controller;
 
-import logic.game.objects.Cell;
-import logic.states.GameState;
+import logic.states.MenuState;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,6 +16,7 @@ public class GameController implements Runnable {
 	private InputController inputController;
 	@Getter
 	private GraphicsController graphicsController;
+	// client
 
 	// View
 	@Getter
@@ -26,6 +26,11 @@ public class GameController implements Runnable {
 	private long lastFrameTime = 0;
 	private long currentTime = 0;
 	private double deltaTime = 0;
+
+	// Game loop
+	@Getter
+	@Setter
+	private boolean running;
 
 	public GameController() {
 		graphicsController = new GraphicsController();
@@ -53,10 +58,11 @@ public class GameController implements Runnable {
 			return;
 
 		// Inicializar estado
-		stateController.pushState(new GameState(this));
+		stateController.pushState(new MenuState(this));
+		running = true;
 
 		// Bucle principal
-		while (true) {
+		while (running) {
 
 			updateDeltaTime();
 
@@ -69,6 +75,10 @@ public class GameController implements Runnable {
 			// Llama al input del estado
 			stateController.currentState().handleInput(inputController.getUserEvents());
 		}
+
+		stateController.clearStates();
+		graphicsController.getFrame().setVisible(false);
+		graphicsController.getFrame().dispose();
 	}
 
 	/**

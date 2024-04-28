@@ -23,34 +23,40 @@ public class GameState implements State {
 	@Getter
 	@Setter
 	private int playerTurn = 1;
-
+	private int totalTurns = 0;
+	private int winner = 0;
 	@Getter
 	@Setter
 	private Cell selectedCell = null;
+	private Board board;
 
-	private int totalTurns = 0;
+	@Getter
+	private boolean playing = true;
 
 	public GameState(GameController gameController) {
 		this.gameController = gameController;
 		objects = new ArrayList<GameObject>();
-		Board board = new Board(gameController.getFRAME_WIDTH() / 2, gameController.getFRAME_HEIGHT() / 2 + 20, this,
+
+		// Create scene objects
+		board = new Board(gameController.getFRAME_WIDTH() / 2, gameController.getFRAME_HEIGHT() / 2 + 20, this,
 				gameController.getFRAME_HEIGHT() * 2 / 3);
+		GameButton confirmButton = initConfirmButton(gameController);
+		GameButton exitButton = initExitButton(gameController);
 
-		GameButton confirmButton = new GameButton("OK", (int) (gameController.getFRAME_WIDTH() * 0.79),
-				gameController.getFRAME_HEIGHT() / 3, (int) (gameController.getFRAME_WIDTH() * 0.15),
-				(int) (gameController.getFRAME_HEIGHT() * 0.1), 0x20DD20, 0x20FF20, 0x000000, 20);
-
-		confirmButton.setAction(this::confirmMovement);
-
+		// Add to the scene
 		objects.add(board);
 		objects.add(confirmButton);
+		objects.add(exitButton);
 
 		totalTurns++;
 	}
 
 	@Override
 	public void update(double deltaTime) {
-		objects.forEach(o -> o.update(deltaTime));
+		if (playing)
+			objects.forEach(o -> o.update(deltaTime));
+		else
+			gameController.getStateController().pushState(new EndGameState(gameController, winner));
 
 	}
 
@@ -66,7 +72,8 @@ public class GameState implements State {
 
 	@Override
 	public void handleInput(List<UserEvent> userEvents) {
-		objects.forEach(o -> o.handleInput(userEvents));
+		if (playing)
+			objects.forEach(o -> o.handleInput(userEvents));
 	}
 
 	private void playerTurnText(GraphicsController graphics) {
@@ -89,11 +96,20 @@ public class GameState implements State {
 				totalTurns++;
 			}
 
+			if (board.checkWin()) {
+				winner = playerTurn;
+				playing = false;
+			} else if (board.checkDraw()) {
+				playing = false;
+			}
+
 			selectedCell.block();
 			togglePlayer();
 			selectedCell = null;
 
 		}
+
+		// TODO enviar mensaje al servidor
 	}
 
 	private void togglePlayer() {
@@ -101,6 +117,35 @@ public class GameState implements State {
 			playerTurn++;
 		else
 			playerTurn--;
+	}
+
+	// BUTTONS --------------------------------------------------------------------
+
+	private GameButton initExitButton(GameController gameController) {
+		int width = (int) (gameController.getFRAME_WIDTH() * 0.15);
+		int height = (int) (gameController.getFRAME_HEIGHT() * 0.07);
+		int x = (int) (gameController.getFRAME_WIDTH() * 0.85) - width / 2;
+		int y = (int) (gameController.getFRAME_HEIGHT() * 0.7) - height / 2;
+
+		GameButton exitButton = new GameButton("FF", x, y, width, height, 0xDD1010, 0xFF1010, 0x000000, 20);
+		exitButton.setAction(() -> {
+			gameController.setRunning(false);
+			// TODO desconectar cliente del servidor
+		});
+
+		return exitButton;
+	}
+
+	private GameButton initConfirmButton(GameController gameController) {
+		int width = (int) (gameController.getFRAME_WIDTH() * 0.15);
+		int height = (int) (gameController.getFRAME_HEIGHT() * 0.07);
+		int x = (int) (gameController.getFRAME_WIDTH() * 0.85) - width / 2;
+		int y = (int) (gameController.getFRAME_HEIGHT() * 0.4) - height / 2;
+
+		GameButton confirmButton = new GameButton("OK", x, y, width, height, 0x20DD20, 0x20FF20, 0x000000, 20);
+
+		confirmButton.setAction(this::confirmMovement);
+		return confirmButton;
 	}
 
 }

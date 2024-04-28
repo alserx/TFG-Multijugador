@@ -3,7 +3,6 @@ package logic.game.objects;
 import java.awt.Point;
 import java.util.List;
 
-import controller.GameController;
 import controller.GraphicsController;
 import logic.GameObject;
 import logic.enums.CellState;
@@ -59,9 +58,6 @@ public class Board implements GameObject {
 
 	@Override
 	public void update(double deltaTime) {
-		if (checkWin())
-			System.out.println("Victoria!!");
-
 		for (int row = 0; row < BOARD_ROWS; row++) {
 			for (int col = 0; col < BOARD_COLS; col++) {
 				cells[row][col].update(deltaTime);
