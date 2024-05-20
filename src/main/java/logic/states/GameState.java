@@ -19,10 +19,8 @@ public class GameState implements State {
 	private ArrayList<GameObject> objects;
 	private GameController gameController;
 
-	// Game variable
-	private int playerTurn = 1;
-	private int totalTurns = 0;
-	private int winner = 0;
+	// Game variables
+	private int playerTurn;
 	@Getter
 	@Setter
 	private Cell selectedCell = null;
@@ -30,10 +28,17 @@ public class GameState implements State {
 	private CellState playerFigure;
 	private Board board;
 
-	public GameState(GameController gameController, CellState playerFigure, int playerTurn) {
+	// Server side variables
+	private int serverTurn;
+	private int totalTurns;
+	private int winner;
+	private String currentUser;
+
+	public GameState(GameController gameController, CellState playerFigure, int playerTurn, String currentUser) {
 		this.gameController = gameController;
 		this.playerFigure = playerFigure;
 		this.playerTurn = playerTurn;
+		this.currentUser = currentUser;
 
 		objects = new ArrayList<GameObject>();
 
@@ -46,15 +51,17 @@ public class GameState implements State {
 		objects.add(board);
 		objects.add(confirmButton);
 
-		totalTurns++;
+		// totalTurns++;
 	}
 
 	@Override
 	public void update(double deltaTime) {
 		if (gameController.isPlaying())
 			objects.forEach(o -> o.update(deltaTime));
-//		else
-//			gameController.getStateController().pushState(new EndGameState(gameController, winner));
+		else {
+			gameController.getGameClient().close();
+			gameController.getStateController().pushState(new EndGameState(gameController, winner));
+		}
 
 	}
 
@@ -70,12 +77,12 @@ public class GameState implements State {
 
 	@Override
 	public void handleInput(List<UserEvent> userEvents) {
-		if (gameController.isPlaying())
+		if (gameController.isPlaying() && playerTurn == serverTurn)
 			objects.forEach(o -> o.handleInput(userEvents));
 	}
 
 	private void playerTurnText(GraphicsController graphics) {
-		String text = "Turno del jugador " + playerFigure;
+		String text = "Turno del jugador " + currentUser;
 		int color = 0;
 
 		switch (playerFigure) {
@@ -110,12 +117,13 @@ public class GameState implements State {
 //			}
 
 			selectedCell.block();
-			togglePlayer();
+			toggleServerPlayer();
 
 			// Send message to server
-			// formato: {figura} {fila del tablero} {columna del tablero} {siguiente turno}
-			gameController.getGameClient().sendMessage(playerFigureString() + " " + selectedCell.getRow() + " "
-					+ selectedCell.getCol() + " " + playerTurn);
+			// formato:
+			// {user} {figure} {board row} {board col} {next turn}
+			gameController.getGameClient().sendMessage(currentUser + " " + playerFigureString() + " "
+					+ selectedCell.getRow() + " " + selectedCell.getCol() + " " + serverTurn);
 
 			selectedCell = null;
 
@@ -141,11 +149,11 @@ public class GameState implements State {
 		return parseFigure;
 	}
 
-	private void togglePlayer() {
-		if (playerTurn == 1)
-			playerTurn++;
+	private void toggleServerPlayer() {
+		if (serverTurn == 1)
+			serverTurn++;
 		else
-			playerTurn--;
+			serverTurn--;
 	}
 
 	// BUTTONS --------------------------------------------------------------------
@@ -183,12 +191,14 @@ public class GameState implements State {
 
 		CellState clickedCell = CellState.EMPTY;
 
-		int row = Integer.parseInt(splitMessage[1]);
-		int col = Integer.parseInt(splitMessage[2]);
+		currentUser = splitMessage[0];
+		int row = Integer.parseInt(splitMessage[2]);
+		int col = Integer.parseInt(splitMessage[3]);
+		serverTurn = Integer.parseInt(splitMessage[4]);
 
-		if (splitMessage[0].equalsIgnoreCase("o"))
+		if (splitMessage[1].equalsIgnoreCase("o"))
 			clickedCell = CellState.CIRCLE;
-		else if (splitMessage[0].equalsIgnoreCase("x"))
+		else if (splitMessage[1].equalsIgnoreCase("x"))
 			clickedCell = CellState.CROSS;
 
 		board.getCells()[row][col].setState(clickedCell);
