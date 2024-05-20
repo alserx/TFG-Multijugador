@@ -24,6 +24,9 @@ public class Cell implements GameObject {
 	@Setter
 	private int size;
 
+	@Getter
+	private int row, col;
+
 	private boolean blocked = false;
 
 	private GameState game;
@@ -34,19 +37,21 @@ public class Cell implements GameObject {
 		this.position = new Point();
 	}
 
-	public Cell(Point position, int size, GameState game) {
+	public Cell(Point position, int size, int row, int col, GameState game) {
 		this();
 		this.position = position;
 		this.size = size;
-
+		this.row = row;
+		this.col = col;
 		this.game = game;
 	}
 
-	public Cell(int x, int y, int size, GameState game) {
+	public Cell(int x, int y, int size, int row, int col, GameState game) {
 		this();
 		this.position = new Point(x, y);
 		this.size = size;
-
+		this.row = row;
+		this.col = col;
 		this.game = game;
 	}
 
@@ -55,7 +60,7 @@ public class Cell implements GameObject {
 		for (UserEvent event : userEvents) {
 			if (event == UserEvent.CLICK) {
 				if (clickInside(new Point(event.getX(), event.getY()))) {
-					performClick(game.getPlayerTurn(), game.getSelectedCell());
+					performClick(game.getSelectedCell(), game.getPlayerFigure());
 				}
 			}
 		}
@@ -88,26 +93,17 @@ public class Cell implements GameObject {
 	/**
 	 * Realiza la accion del click en funcion del jugador que esté jugando
 	 * 
-	 * @param playerTurn El jugador que realiza el movimiento
 	 */
-	private void performClick(int playerTurn, Cell selectedCell) {
+	private void performClick(Cell selectedCell, CellState playerFigure) {
 		if (state == CellState.EMPTY) {
-			if (playerTurn == 1) {
-				state = CellState.CROSS;
+			state = playerFigure;
 
-				if (selectedCell != null && selectedCell.getState() == state) {
-					selectedCell.setState(CellState.EMPTY);
-				}
-
-				game.setSelectedCell(this);
-			} else if (playerTurn == 2) {
-				state = CellState.CIRCLE;
-				if (selectedCell != null && selectedCell.getState() == state) {
-					selectedCell.setState(CellState.EMPTY);
-				}
-
-				game.setSelectedCell(this);
+			if (selectedCell != null && selectedCell.getState() == state) {
+				selectedCell.setState(CellState.EMPTY);
 			}
+
+			game.setSelectedCell(this);
+
 		} else if (!blocked) {
 			state = CellState.EMPTY;
 			game.setSelectedCell(null);

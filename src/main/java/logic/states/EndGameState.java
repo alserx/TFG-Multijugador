@@ -79,4 +79,10 @@ public class EndGameState implements State {
 
 	}
 
+	@Override
+	public void receiveMessage(String message) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

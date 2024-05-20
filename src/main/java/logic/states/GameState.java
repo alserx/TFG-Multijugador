@@ -20,43 +20,41 @@ public class GameState implements State {
 	private GameController gameController;
 
 	// Game variable
-	@Getter
-	@Setter
 	private int playerTurn = 1;
 	private int totalTurns = 0;
 	private int winner = 0;
 	@Getter
 	@Setter
 	private Cell selectedCell = null;
+	@Getter
+	private CellState playerFigure;
 	private Board board;
 
-	@Getter
-	private boolean playing = true;
-
-	public GameState(GameController gameController) {
+	public GameState(GameController gameController, CellState playerFigure, int playerTurn) {
 		this.gameController = gameController;
+		this.playerFigure = playerFigure;
+		this.playerTurn = playerTurn;
+
 		objects = new ArrayList<GameObject>();
 
 		// Create scene objects
 		board = new Board(gameController.getFRAME_WIDTH() / 2, gameController.getFRAME_HEIGHT() / 2 + 20, this,
 				gameController.getFRAME_HEIGHT() * 2 / 3);
 		GameButton confirmButton = initConfirmButton(gameController);
-		GameButton exitButton = initExitButton(gameController);
 
 		// Add to the scene
 		objects.add(board);
 		objects.add(confirmButton);
-		objects.add(exitButton);
 
 		totalTurns++;
 	}
 
 	@Override
 	public void update(double deltaTime) {
-		if (playing)
+		if (gameController.isPlaying())
 			objects.forEach(o -> o.update(deltaTime));
-		else
-			gameController.getStateController().pushState(new EndGameState(gameController, winner));
+//		else
+//			gameController.getStateController().pushState(new EndGameState(gameController, winner));
 
 	}
 
@@ -72,18 +70,25 @@ public class GameState implements State {
 
 	@Override
 	public void handleInput(List<UserEvent> userEvents) {
-		if (playing)
+		if (gameController.isPlaying())
 			objects.forEach(o -> o.handleInput(userEvents));
 	}
 
 	private void playerTurnText(GraphicsController graphics) {
-		String text = "Turno del jugador " + playerTurn;
+		String text = "Turno del jugador " + playerFigure;
 		int color = 0;
 
-		if (playerTurn == 1)
+		switch (playerFigure) {
+		case CROSS:
 			color = 0x0000FF;
-		else
+			break;
+		case CIRCLE:
 			color = 0xFF0000;
+			break;
+
+		default:
+			break;
+		}
 
 		graphics.drawText(text, color, (int) (gameController.getFRAME_WIDTH() * 0.05),
 				(int) (gameController.getFRAME_HEIGHT() * 0.15), 32);
@@ -92,24 +97,48 @@ public class GameState implements State {
 
 	private void confirmMovement() {
 		if (selectedCell != null && selectedCell.getState() != CellState.EMPTY) {
-			if (playerTurn == 2) {
-				totalTurns++;
-			}
-
-			if (board.checkWin()) {
-				winner = playerTurn;
-				playing = false;
-			} else if (board.checkDraw()) {
-				playing = false;
-			}
+			// this is managed by server
+//			if (playerTurn == 2) {
+//				totalTurns++;
+//			}
+//
+//			if (board.checkWin()) {
+//				winner = playerTurn;
+//				gameController.setPlaying(false);
+//			} else if (board.checkDraw()) {
+//				gameController.setPlaying(false);
+//			}
 
 			selectedCell.block();
 			togglePlayer();
+
+			// Send message to server
+			// formato: {figura} {fila del tablero} {columna del tablero} {siguiente turno}
+			gameController.getGameClient().sendMessage(playerFigureString() + " " + selectedCell.getRow() + " "
+					+ selectedCell.getCol() + " " + playerTurn);
+
 			selectedCell = null;
 
 		}
 
-		// TODO enviar mensaje al servidor
+	}
+
+	private String playerFigureString() {
+		String parseFigure;
+
+		switch (playerFigure) {
+		case CROSS:
+			parseFigure = "X";
+			break;
+		case CIRCLE:
+			parseFigure = "O";
+			break;
+		default:
+			parseFigure = "none";
+			break;
+		}
+
+		return parseFigure;
 	}
 
 	private void togglePlayer() {
@@ -146,6 +175,24 @@ public class GameState implements State {
 
 		confirmButton.setAction(this::confirmMovement);
 		return confirmButton;
+	}
+
+	@Override
+	public void receiveMessage(String message) {
+		String[] splitMessage = message.split(" ");
+
+		CellState clickedCell = CellState.EMPTY;
+
+		int row = Integer.parseInt(splitMessage[1]);
+		int col = Integer.parseInt(splitMessage[2]);
+
+		if (splitMessage[0].equalsIgnoreCase("o"))
+			clickedCell = CellState.CIRCLE;
+		else if (splitMessage[0].equalsIgnoreCase("x"))
+			clickedCell = CellState.CROSS;
+
+		board.getCells()[row][col].setState(clickedCell);
+		board.getCells()[row][col].block();
 	}
 
 }

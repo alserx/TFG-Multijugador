@@ -1,5 +1,7 @@
 package controller;
 
+import connection.GameClient;
+import connection.MessageReceivedObserver;
 import logic.states.MenuState;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +10,7 @@ import lombok.Setter;
  * The main Controller, it manages all the game loop: handle input, update and
  * render
  */
-public class GameController implements Runnable {
+public class GameController implements Runnable, MessageReceivedObserver {
 	// Controllers
 	@Getter
 	private StateController stateController;
@@ -16,7 +18,8 @@ public class GameController implements Runnable {
 	private InputController inputController;
 	@Getter
 	private GraphicsController graphicsController;
-	// client
+	@Getter
+	private GameClient gameClient;
 
 	// View
 	@Getter
@@ -31,11 +34,15 @@ public class GameController implements Runnable {
 	@Getter
 	@Setter
 	private boolean running;
+	@Getter
+	@Setter
+	private boolean playing;
 
 	public GameController() {
 		graphicsController = new GraphicsController();
 		inputController = new InputController();
 		stateController = new StateController();
+		gameClient = new GameClient("127.0.0.1", 7777);
 	}
 
 	/**
@@ -45,9 +52,10 @@ public class GameController implements Runnable {
 	 */
 	private boolean init() {
 		if (!graphicsController.init(this, FRAME_WIDTH, FRAME_HEIGHT) || !inputController.init(this)
-				|| !stateController.init(this))
+				|| !stateController.init(this) || !gameClient.init())
 			return false;
 
+		gameClient.registerMessageObserver(this); // Registering this controller as message observer
 		return true;
 	}
 
@@ -112,5 +120,13 @@ public class GameController implements Runnable {
 			} while (graphicsController.getFrame().getBufferStrategy().contentsRestored());
 			graphicsController.getFrame().getBufferStrategy().show();
 		} while (graphicsController.getFrame().getBufferStrategy().contentsLost());
+	}
+
+	@Override
+	public void onMessageReceived(String message) {
+		System.out.println("Received message from server: [" + message + "]");
+
+		// Send message to the current state
+		stateController.currentState().receiveMessage(message);
 	}
 }

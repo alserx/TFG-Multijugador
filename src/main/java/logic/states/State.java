@@ -20,4 +20,11 @@ public interface State {
 	 * Handle the input of the actual state
 	 */
 	public void handleInput(List<UserEvent> userEvents);
+
+	/**
+	 * Receives a string message sent from the server
+	 * 
+	 * @param message The message received
+	 */
+	public void receiveMessage(String message);
 }

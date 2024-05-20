@@ -93,7 +93,7 @@ public class Board implements GameObject {
 		for (int row = 0; row < BOARD_ROWS; row++) {
 			for (int col = 0; col < BOARD_COLS; col++) {
 				cells[row][col] = new Cell((int) (row * size / BOARD_ROWS + position.getX()),
-						(int) (col * size / BOARD_COLS + position.getY()), cellSize, game);
+						(int) (col * size / BOARD_COLS + position.getY()), cellSize, row, col, game);
 			}
 		}
 	}

@@ -1,11 +1,15 @@
 package controller;
 
 import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
+
+import javax.swing.JTextField;
 
 import lombok.Getter;
 import view.GameFrame;
@@ -16,6 +20,7 @@ public class GraphicsController {
 	private GameFrame frame;
 
 	// Para pintar graficos con Swing
+	@Getter
 	private Graphics2D graphics;
 
 	/**
@@ -36,23 +41,21 @@ public class GraphicsController {
 
 		frame.addMouseListener(mainController.getInputController());
 		frame.addMouseMotionListener(mainController.getInputController());
+		frame.addKeyListener(mainController.getInputController());
 
 		int posX = centerPoint.x - width / 2;
 		int posY = centerPoint.y - height / 2;
 
 		frame.setLocation(posX, posY);
+		boolean initResult = frame.init(width, height);
 
-		return frame.init(width, height);
+		return initResult;
 	}
 
 	/**
 	 * Prepara el siguiente frame para su pintado
 	 */
 	public void prepareFrame() {
-//		// Espera hasta que se genere un BufferStrategy
-//		while (frame.getBufferStrategy() == null)
-//			;
-
 		graphics = (Graphics2D) frame.getStrategy().getDrawGraphics();
 	}
 
@@ -137,6 +140,13 @@ public class GraphicsController {
 		graphics.drawLine(x, y + size, x + size, y);
 	}
 
+	public void drawLine(int color, int x1, int y1, int x2, int y2) {
+		graphics.setColor(new Color(color));
+		graphics.setStroke(new BasicStroke(1));
+
+		graphics.drawLine(x1, y1, x2, y2);
+	}
+
 	int getWidth() {
 		return frame.getPanelWidth();
 	}
@@ -171,4 +181,5 @@ public class GraphicsController {
 	public void clear() {
 		graphics.clearRect(0, 0, getWidth(), getHeight());
 	}
+
 }
