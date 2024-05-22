@@ -4,14 +4,12 @@ import java.awt.Point;
 import java.util.List;
 
 import controller.GraphicsController;
-import logic.GameObject;
 import logic.enums.CellState;
 import logic.enums.UserEvent;
 import logic.states.GameState;
 import lombok.Getter;
-import lombok.Setter;
 
-public class Board implements GameObject {
+public class Board extends AbstractGameObject {
 
 	// Filas y columnas
 	private final int BOARD_ROWS = 3, BOARD_COLS = 3;
@@ -19,11 +17,6 @@ public class Board implements GameObject {
 	// Tablero
 	@Getter
 	private Cell[][] cells;
-
-	// Posicion del tablero en la pantalla
-	@Getter
-	@Setter
-	private Point position;
 
 	// Dimensiones del tablero
 	@Getter
@@ -58,27 +51,33 @@ public class Board implements GameObject {
 
 	@Override
 	public void update(double deltaTime) {
-		for (int row = 0; row < BOARD_ROWS; row++) {
-			for (int col = 0; col < BOARD_COLS; col++) {
-				cells[row][col].update(deltaTime);
+		if (this.isActive()) {
+			for (int row = 0; row < BOARD_ROWS; row++) {
+				for (int col = 0; col < BOARD_COLS; col++) {
+					cells[row][col].update(deltaTime);
+				}
 			}
 		}
 	}
 
 	@Override
 	public void render(GraphicsController graphics) {
-		for (int row = 0; row < BOARD_ROWS; row++) {
-			for (int col = 0; col < BOARD_COLS; col++) {
-				cells[row][col].render(graphics);
+		if (this.isActive()) {
+			for (int row = 0; row < BOARD_ROWS; row++) {
+				for (int col = 0; col < BOARD_COLS; col++) {
+					cells[row][col].render(graphics);
+				}
 			}
 		}
 	}
 
 	@Override
 	public void handleInput(List<UserEvent> userEvents) {
-		for (int row = 0; row < BOARD_ROWS; row++) {
-			for (int col = 0; col < BOARD_COLS; col++) {
-				cells[row][col].handleInput(userEvents);
+		if (this.isActive()) {
+			for (int row = 0; row < BOARD_ROWS; row++) {
+				for (int col = 0; col < BOARD_COLS; col++) {
+					cells[row][col].handleInput(userEvents);
+				}
 			}
 		}
 	}

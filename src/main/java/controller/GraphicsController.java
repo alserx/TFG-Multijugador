@@ -1,15 +1,11 @@
 package controller;
 
 import java.awt.BasicStroke;
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
-
-import javax.swing.JTextField;
 
 import lombok.Getter;
 import view.GameFrame;
@@ -77,7 +73,7 @@ public class GraphicsController {
 	 * @param strokeWidth Ancho de la linea de dibujado
 	 */
 	public void drawCircle(int color, int x, int y, int diameter, int strokeWidth) {
-		graphics.setColor(new Color(color));
+		setColor(color);
 		graphics.setStroke(new BasicStroke(strokeWidth));
 
 		graphics.drawOval(x, y, diameter, diameter);
@@ -93,7 +89,7 @@ public class GraphicsController {
 	 * @param strokeWidth Ancho de la linea de dibujado
 	 */
 	public void drawSquare(int color, int x, int y, int side, int strokeWidth) {
-		graphics.setColor(new Color(color));
+		setColor(color);
 		graphics.setStroke(new BasicStroke(strokeWidth));
 
 		graphics.drawRect(x, y, side, side);
@@ -109,7 +105,7 @@ public class GraphicsController {
 	 * @param strokeWidth Ancho de la linea de dibujado
 	 */
 	public void drawRect(int color, int x, int y, int width, int height, int strokeWidth) {
-		graphics.setColor(new Color(color));
+		setColor(color);
 		graphics.setStroke(new BasicStroke(strokeWidth));
 
 		graphics.drawRect(x, y, width, height);
@@ -117,7 +113,7 @@ public class GraphicsController {
 
 	public void drawBorderedRect(int backgroundColor, int borderColor, int x, int y, int width, int height,
 			int strokeWidth) {
-		graphics.setColor(new Color(backgroundColor));
+		setColor(backgroundColor);
 		graphics.fillRect(x, y, width, height);
 
 		drawRect(borderColor, x, y, width, height, strokeWidth);
@@ -133,7 +129,7 @@ public class GraphicsController {
 	 * @param strokeWidth Ancho de la linea de dibujado
 	 */
 	public void drawCross(int color, int x, int y, int size, int strokeWidth) {
-		graphics.setColor(new Color(color));
+		setColor(color);
 		graphics.setStroke(new BasicStroke(strokeWidth));
 
 		graphics.drawLine(x, y, x + size, y + size);
@@ -141,7 +137,7 @@ public class GraphicsController {
 	}
 
 	public void drawLine(int color, int x1, int y1, int x2, int y2) {
-		graphics.setColor(new Color(color));
+		setColor(color);
 		graphics.setStroke(new BasicStroke(1));
 
 		graphics.drawLine(x1, y1, x2, y2);
@@ -156,7 +152,7 @@ public class GraphicsController {
 	}
 
 	public void drawText(String text, int color, int x, int y, int size) {
-		graphics.setColor(new Color(color));
+		setColor(color);
 
 		setFontSize((float) size);
 
@@ -182,4 +178,11 @@ public class GraphicsController {
 		graphics.clearRect(0, 0, getWidth(), getHeight());
 	}
 
+	private void setColor(int rgba) {
+		int alpha = (rgba >> 24) & 0xFF;
+		int red = (rgba >> 16) & 0xFF;
+		int green = (rgba >> 8) & 0xFF;
+		int blue = rgba & 0xFF;
+		graphics.setColor(new Color(red, green, blue, alpha));
+	}
 }

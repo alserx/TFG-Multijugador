@@ -4,21 +4,16 @@ import java.awt.Point;
 import java.util.List;
 
 import controller.GraphicsController;
-import logic.GameObject;
 import logic.enums.CellState;
 import logic.enums.UserEvent;
 import logic.states.GameState;
 import lombok.Getter;
 import lombok.Setter;
 
-public class Cell implements GameObject {
+public class Cell extends AbstractGameObject {
 	@Getter
 	@Setter
 	private CellState state;
-
-	@Getter
-	@Setter
-	private Point position;
 
 	@Getter
 	@Setter
@@ -57,10 +52,12 @@ public class Cell implements GameObject {
 
 	@Override
 	public void handleInput(List<UserEvent> userEvents) {
-		for (UserEvent event : userEvents) {
-			if (event == UserEvent.CLICK) {
-				if (clickInside(new Point(event.getX(), event.getY()))) {
-					performClick(game.getSelectedCell(), game.getPlayerFigure());
+		if (this.isActive()) {
+			for (UserEvent event : userEvents) {
+				if (event == UserEvent.CLICK) {
+					if (clickInside(new Point(event.getX(), event.getY()))) {
+						performClick(game.getSelectedCell(), game.getPlayerFigure());
+					}
 				}
 			}
 		}
@@ -69,24 +66,27 @@ public class Cell implements GameObject {
 
 	@Override
 	public void update(double deltaTime) {
+		return;
 	}
 
 	@Override
 	public void render(GraphicsController graphics) {
-		graphics.drawSquare(0x000000, position.x - size / 2, position.y - size / 2, size, 5);
+		if (this.isActive()) {
+			graphics.drawSquare(0xFF000000, position.x - size / 2, position.y - size / 2, size, 5);
 
-		int figureSize = (int) (size * 0.7);
-		switch (state) {
-		case CROSS:
-			graphics.drawCross(0x00F00FF, position.x - figureSize / 2, position.y - figureSize / 2, figureSize, 10);
-			break;
+			int figureSize = (int) (size * 0.7);
+			switch (state) {
+			case CROSS:
+				graphics.drawCross(0xFF0000FF, position.x - figureSize / 2, position.y - figureSize / 2, figureSize, 10);
+				break;
 
-		case CIRCLE:
-			graphics.drawCircle(0xFF0000, position.x - figureSize / 2, position.y - figureSize / 2, figureSize, 10);
-			break;
+			case CIRCLE:
+				graphics.drawCircle(0xFFFF0000, position.x - figureSize / 2, position.y - figureSize / 2, figureSize, 10);
+				break;
 
-		case EMPTY:
-			break;
+			case EMPTY:
+				break;
+			}
 		}
 	}
 

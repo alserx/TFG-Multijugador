@@ -70,7 +70,7 @@ public class GameState implements State {
 		objects.forEach(o -> o.render(graphics));
 		playerTurnText(graphics);
 
-		graphics.drawText("Turno: " + totalTurns, 0x000000, (int) (gameController.getFRAME_WIDTH() * 0.05),
+		graphics.drawText("Turno: " + totalTurns, 0xFF000000, (int) (gameController.getFRAME_WIDTH() * 0.05),
 				(int) (gameController.getFRAME_HEIGHT() * 0.5), 32);
 
 	}
@@ -87,10 +87,10 @@ public class GameState implements State {
 
 		switch (playerFigure) {
 		case CROSS:
-			color = 0x0000FF;
+			color = 0xFF0000FF;
 			break;
 		case CIRCLE:
-			color = 0xFF0000;
+			color = 0xFFFF0000;
 			break;
 
 		default:
@@ -158,20 +158,20 @@ public class GameState implements State {
 
 	// BUTTONS --------------------------------------------------------------------
 
-	private GameButton initExitButton(GameController gameController) {
-		int width = (int) (gameController.getFRAME_WIDTH() * 0.15);
-		int height = (int) (gameController.getFRAME_HEIGHT() * 0.07);
-		int x = (int) (gameController.getFRAME_WIDTH() * 0.85) - width / 2;
-		int y = (int) (gameController.getFRAME_HEIGHT() * 0.7) - height / 2;
-
-		GameButton exitButton = new GameButton("FF", x, y, width, height, 0xDD1010, 0xFF1010, 0x000000, 20);
-		exitButton.setAction(() -> {
-			gameController.setRunning(false);
-			// TODO desconectar cliente del servidor
-		});
-
-		return exitButton;
-	}
+//	private GameButton initExitButton(GameController gameController) {
+//		int width = (int) (gameController.getFRAME_WIDTH() * 0.15);
+//		int height = (int) (gameController.getFRAME_HEIGHT() * 0.07);
+//		int x = (int) (gameController.getFRAME_WIDTH() * 0.85) - width / 2;
+//		int y = (int) (gameController.getFRAME_HEIGHT() * 0.7) - height / 2;
+//
+//		GameButton exitButton = new GameButton("FF", x, y, width, height, 0xDD1010, 0xFF1010, 0x000000, 20);
+//		exitButton.setAction(() -> {
+//			gameController.setRunning(false);
+//			// TODO desconectar cliente del servidor
+//		});
+//
+//		return exitButton;
+//	}
 
 	private GameButton initConfirmButton(GameController gameController) {
 		int width = (int) (gameController.getFRAME_WIDTH() * 0.15);

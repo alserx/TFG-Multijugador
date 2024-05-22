@@ -29,8 +29,6 @@ public class StateController {
 		if (this.gameController == null)
 			return false;
 
-		states.push(new MenuState(this.gameController));
-
 		return true;
 	}
 

@@ -1,2 +1,5 @@
-/META-INF/
+/connection/
+/controller/
 /logic/
+/view/
+/META-INF/

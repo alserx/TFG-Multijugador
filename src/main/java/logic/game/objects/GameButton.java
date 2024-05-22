@@ -4,21 +4,19 @@ import java.awt.Point;
 import java.util.List;
 
 import controller.GraphicsController;
-import logic.GameObject;
 import logic.enums.UserEvent;
 import lombok.Getter;
 import lombok.Setter;
 
-public class GameButton implements GameObject {
+public class GameButton extends AbstractGameObject {
 	@Getter
 	@Setter
 	private String text;
-	@Getter
-	@Setter
-	private Point position;
+
 	@Getter
 	@Setter
 	private int width;
+
 	@Getter
 	@Setter
 	private int height;
@@ -65,26 +63,30 @@ public class GameButton implements GameObject {
 
 	@Override
 	public void render(GraphicsController graphics) {
-		if (!hovered)
-			graphics.drawBorderedRect(backgroundColor, textColor, position.x, position.y, width, height, 2);
-		else
-			graphics.drawBorderedRect(hoverColor, textColor, position.x, position.y, width, height, 2);
+		if (this.isActive()) {
+			if (!hovered)
+				graphics.drawBorderedRect(backgroundColor, textColor, position.x, position.y, width, height, 2);
+			else
+				graphics.drawBorderedRect(hoverColor, textColor, position.x, position.y, width, height, 2);
 
-		int textWidth = graphics.getStringWidth(text, fontSize);
-		int textHeight = graphics.getStringHeight(fontSize);
-		int textX = position.x + (width - textWidth) / 2;
-		int textY = position.y + (height - textHeight) / 2 + textHeight / 2;
+			int textWidth = graphics.getStringWidth(text, fontSize);
+			int textHeight = graphics.getStringHeight(fontSize);
+			int textX = position.x + (width - textWidth) / 2;
+			int textY = position.y + (height - textHeight) / 2 + textHeight / 2;
 
-		graphics.drawText(text, textColor, textX, textY, fontSize);
+			graphics.drawText(text, textColor, textX, textY, fontSize);
+		}
 	}
 
 	@Override
 	public void handleInput(List<UserEvent> userEvents) {
-		for (UserEvent event : userEvents) {
-			if (event == UserEvent.MOUSE_MOVED) {
-				hovered = mouseInside(new Point(event.getX(), event.getY()));
-			} else if (event == UserEvent.CLICK && hovered) {
-				performClick();
+		if (this.isActive()) {
+			for (UserEvent event : userEvents) {
+				if (event == UserEvent.MOUSE_MOVED) {
+					hovered = mouseInside(new Point(event.getX(), event.getY()));
+				} else if (event == UserEvent.CLICK && hovered) {
+					performClick();
+				}
 			}
 		}
 	}

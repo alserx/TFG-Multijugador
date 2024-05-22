@@ -7,6 +7,7 @@ import controller.GameController;
 import controller.GraphicsController;
 import logic.GameObject;
 import logic.enums.UserEvent;
+import logic.game.objects.GameAnimatedText;
 import logic.game.objects.GameButton;
 import logic.game.objects.GameTextField;
 
@@ -36,6 +37,25 @@ public class MenuState implements State {
 		normalTextSize = 20;
 		smallTextSize = 16;
 		enteredUsername = true;
+
+		GameAnimatedText ticText = new GameAnimatedText("Tic",
+				(int) (gameController.getFRAME_WIDTH() * 0.5)
+						- gameController.getGraphicsController().getStringWidth("TicTac", titleTextSize) / 2,
+				(int) (gameController.getFRAME_HEIGHT() * 0.18), 0xFFFF0000, titleTextSize, 2.5);
+
+		GameAnimatedText tacText = new GameAnimatedText("Tac",
+				(int) (gameController.getFRAME_WIDTH() * 0.5)
+						- gameController.getGraphicsController().getStringWidth("Tac", titleTextSize) / 2,
+				(int) (gameController.getFRAME_HEIGHT() * 0.18) + titleTextSize, 0xFF0000FF, titleTextSize, 4);
+
+		GameAnimatedText toeText = new GameAnimatedText("Toe",
+				(int) (gameController.getFRAME_WIDTH() * 0.5)
+						- gameController.getGraphicsController().getStringWidth("T", titleTextSize) / 2,
+				(int) (gameController.getFRAME_HEIGHT() * 0.18) + titleTextSize * 2, 0xFFBD00FF, titleTextSize, 1);
+
+		objects.add(ticText);
+		objects.add(tacText);
+		objects.add(toeText);
 	}
 
 	@Override
@@ -45,22 +65,22 @@ public class MenuState implements State {
 
 	@Override
 	public void render(GraphicsController graphics) {
-		drawMenuText(graphics, "Tic", 0xFF0000,
-				(int) (gameController.getFRAME_WIDTH() * 0.5) - graphics.getStringWidth("TicTac", titleTextSize) / 2,
-				(int) (gameController.getFRAME_HEIGHT() * 0.18), titleTextSize);
-		drawMenuText(graphics, "Tac", 0x0000FF,
-				(int) (gameController.getFRAME_WIDTH() * 0.5) - graphics.getStringWidth("Tac", titleTextSize) / 2,
-				(int) (gameController.getFRAME_HEIGHT() * 0.18) + titleTextSize, titleTextSize);
-		drawMenuText(graphics, "Toe!", 0xBD00FF,
-				(int) (gameController.getFRAME_WIDTH() * 0.5) - graphics.getStringWidth("T", titleTextSize) / 2,
-				(int) (gameController.getFRAME_HEIGHT() * 0.18) + titleTextSize * 2, titleTextSize);
+//		drawMenuText(graphics, "Tic", 0xFFFF0000,
+//				(int) (gameController.getFRAME_WIDTH() * 0.5) - graphics.getStringWidth("TicTac", titleTextSize) / 2,
+//				(int) (gameController.getFRAME_HEIGHT() * 0.18), titleTextSize);
+//		drawMenuText(graphics, "Tac", 0xFF0000FF,
+//				(int) (gameController.getFRAME_WIDTH() * 0.5) - graphics.getStringWidth("Tac", titleTextSize) / 2,
+//				(int) (gameController.getFRAME_HEIGHT() * 0.18) + titleTextSize, titleTextSize);
+//		drawMenuText(graphics, "Toe!", 0xFFBD00FF,
+//				(int) (gameController.getFRAME_WIDTH() * 0.5) - graphics.getStringWidth("T", titleTextSize) / 2,
+//				(int) (gameController.getFRAME_HEIGHT() * 0.18) + titleTextSize * 2, titleTextSize);
 
-		drawMenuText(graphics, "Username:", 0x000000,
+		drawMenuText(graphics, "Username:", 0xFF000000,
 				(int) (gameController.getFRAME_WIDTH() * 0.42) - graphics.getStringWidth("Username:", normalTextSize),
 				(int) (gameController.getFRAME_HEIGHT() * 0.38) + normalTextSize * 2, normalTextSize);
 
 		if (!enteredUsername)
-			drawMenuText(graphics, "Introduce a valid username", 0xFF0000,
+			drawMenuText(graphics, "Introduce a valid username", 0xFFFF0000,
 					(int) (gameController.getFRAME_WIDTH() * 0.5)
 							- graphics.getStringWidth("Introduce a valid username!", smallTextSize) / 2,
 					(int) (gameController.getFRAME_HEIGHT() * 0.52) + smallTextSize * 2, smallTextSize);
@@ -83,7 +103,7 @@ public class MenuState implements State {
 		int x = (int) (gameController.getFRAME_WIDTH() * 0.5) - width / 2,
 				y = (int) (gameController.getFRAME_HEIGHT() * 0.68) - height / 2;
 
-		GameButton playButton = new GameButton("PLAY", x, y, width, height, 0x20DD20, 0x20FF20, 0x000000, 20);
+		GameButton playButton = new GameButton("PLAY", x, y, width, height, 0xFF20DD20, 0xFF20FF20, 0xFF000000, 20);
 		playButton.setAction(() -> {
 			if (!userTextField.getText().isEmpty()) {
 				enteredUsername = true;
@@ -105,7 +125,7 @@ public class MenuState implements State {
 		int x = (int) (gameController.getFRAME_WIDTH() * 0.5) - width / 2,
 				y = (int) (gameController.getFRAME_HEIGHT() * 0.68) + height;
 
-		GameButton exitButton = new GameButton("EXIT", x, y, width, height, 0xDD1010, 0xFF1010, 0x000000, 20);
+		GameButton exitButton = new GameButton("EXIT", x, y, width, height, 0xFFDD1010, 0xFFFF1010, 0xFF000000, 20);
 		exitButton.setAction(() -> {
 			gameController.setRunning(false);
 		});
@@ -119,7 +139,7 @@ public class MenuState implements State {
 		int x = (int) (gameController.getFRAME_WIDTH() * 0.5) - width / 2;
 		int y = (int) (gameController.getFRAME_HEIGHT() * 0.5) - height / 2;
 
-		GameTextField textField = new GameTextField(x, y, width, height, 0xFFFFFF, 0x000000, 0x000000, 20);
+		GameTextField textField = new GameTextField(x, y, width, height, 0xFFFFFFFF, 0xFF000000, 0xFF000000, 20);
 
 		return textField;
 	}

@@ -65,6 +65,8 @@ public class GameController implements Runnable, MessageReceivedObserver {
 		if (!init())
 			return;
 
+		paint();
+
 		// Inicializar estado
 		stateController.pushState(new MenuState(this));
 		running = true;
@@ -111,7 +113,8 @@ public class GameController implements Runnable, MessageReceivedObserver {
 					graphicsController.clear();
 
 					// Render de la logica
-					stateController.currentState().render(graphicsController);
+					if (stateController.currentState() != null)
+						stateController.currentState().render(graphicsController);
 				}
 
 				finally {

@@ -4,22 +4,23 @@ import java.awt.Point;
 import java.util.List;
 
 import controller.GraphicsController;
-import logic.GameObject;
 import logic.enums.UserEvent;
 import lombok.Getter;
 import lombok.Setter;
 
-public class GameTextField implements GameObject {
+public class GameTextField extends AbstractGameObject {
 	@Getter
 	@Setter
 	private String text;
-	private final Point position;
 	private final int width;
 	private final int height;
 	private final int backgroundColor;
 	private final int foregroundColor;
 	private final int borderColor;
 	private final int fontSize;
+	private final double cursorTime;
+	private double timer;
+	private int cursorColor;
 
 	@Getter
 	private boolean focused;
@@ -32,45 +33,56 @@ public class GameTextField implements GameObject {
 		this.backgroundColor = backgroundColor;
 		this.foregroundColor = foregroundColor;
 		this.borderColor = borderColor;
+		this.cursorColor = foregroundColor;
 		this.fontSize = fontSize;
 		this.text = "";
 		this.focused = false;
+		this.cursorTime = 0.5;
 	}
 
 	@Override
 	public void update(double deltaTime) {
-		// TextField doesn't require update logic for now
+		timer += deltaTime;
+
+		if (timer >= cursorTime) {
+			cursorColor = swapCursorColor(cursorColor);
+			timer = 0;
+		}
 	}
 
 	@Override
 	public void render(GraphicsController graphics) {
-		// Render background and border
-		graphics.drawBorderedRect(backgroundColor, borderColor, position.x, position.y, width, height, 2);
+		if (this.isActive()) {
+			// Render background and border
+			graphics.drawBorderedRect(backgroundColor, borderColor, position.x, position.y, width, height, 2);
 
-		// Render text
-		int textWidth = graphics.getStringWidth(text, fontSize);
-		int textHeight = graphics.getStringHeight(fontSize);
-		int textX = position.x + 5; // Adjust text padding
-		int textY = position.y + (height - textHeight) / 2 + textHeight / 2;
+			// Render text
+			int textWidth = graphics.getStringWidth(text, fontSize);
+			int textHeight = graphics.getStringHeight(fontSize);
+			int textX = position.x + 5; // Adjust text padding
+			int textY = position.y + (height - textHeight) / 2 + textHeight / 2;
 
-		graphics.drawText(text, foregroundColor, textX, textY, fontSize);
+			graphics.drawText(text, foregroundColor, textX, textY, fontSize);
 
-		// Render cursor if focused
-		if (focused) {
-			int cursorX = textX + textWidth;
-			int cursorY = position.y + (height - textHeight) / 2;
-			graphics.drawLine(foregroundColor, cursorX, cursorY, cursorX, cursorY + textHeight);
+			// Render cursor if focused
+			if (focused) {
+				int cursorX = textX + textWidth;
+				int cursorY = position.y + (height - textHeight) / 2;
+				graphics.drawLine(cursorColor, cursorX, cursorY, cursorX, cursorY + textHeight);
+			}
 		}
 	}
 
 	@Override
 	public void handleInput(List<UserEvent> userEvents) {
-		for (UserEvent event : userEvents) {
-			if (event == UserEvent.CLICK) {
-				focused = isMouseInside(event.getX(), event.getY());
-			}
-			if (event == UserEvent.KEY_TYPED && focused) {
-				handleTextInput(event.getKeyChar());
+		if (this.isActive()) {
+			for (UserEvent event : userEvents) {
+				if (event == UserEvent.CLICK) {
+					focused = isMouseInside(event.getX(), event.getY());
+				}
+				if (event == UserEvent.KEY_TYPED && focused) {
+					handleTextInput(event.getKeyChar());
+				}
 			}
 		}
 	}
@@ -88,5 +100,15 @@ public class GameTextField implements GameObject {
 		} else if (Character.isAlphabetic(inputChar) || Character.isDigit(inputChar) || inputChar == ' ') {
 			text += inputChar;
 		}
+	}
+
+	private int swapCursorColor(int color) {
+		if (color == foregroundColor) {
+			cursorColor = 0x00000000;
+		} else {
+			cursorColor = foregroundColor;
+		}
+
+		return cursorColor;
 	}
 }

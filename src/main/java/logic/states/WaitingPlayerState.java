@@ -8,6 +8,7 @@ import controller.GraphicsController;
 import logic.GameObject;
 import logic.enums.CellState;
 import logic.enums.UserEvent;
+import logic.game.objects.GameAnimatedText;
 
 public class WaitingPlayerState implements State {
 	private ArrayList<GameObject> objects;
@@ -20,6 +21,16 @@ public class WaitingPlayerState implements State {
 		this.gameController = gameController;
 
 		titleTextSize = 40;
+
+		GameAnimatedText waitingText = new GameAnimatedText("Waiting for players...",
+				(int) (gameController.getFRAME_WIDTH() * 0.5)
+						- gameController.getGraphicsController().getStringWidth("Waiting for players...", titleTextSize)
+								/ 2,
+				(int) (gameController.getFRAME_HEIGHT() * 0.5)
+						- gameController.getGraphicsController().getStringHeight(titleTextSize) / 2,
+				0xFF101010, titleTextSize, 2.5);
+
+		objects.add(waitingText);
 	}
 
 	@Override
@@ -29,17 +40,7 @@ public class WaitingPlayerState implements State {
 
 	@Override
 	public void render(GraphicsController graphics) {
-		drawSceneText(graphics, "Waiting for players...", 0x101010,
-				(int) (gameController.getFRAME_WIDTH() * 0.5)
-						- graphics.getStringWidth("Waiting for players...", titleTextSize) / 2,
-				(int) (gameController.getFRAME_HEIGHT() * 0.5) - graphics.getStringHeight(titleTextSize) / 2,
-				titleTextSize);
-
 		objects.forEach(o -> o.render(graphics));
-	}
-
-	private void drawSceneText(GraphicsController graphics, String text, int color, int x, int y, int size) {
-		graphics.drawText(text, color, x, y, size);
 	}
 
 	@Override
