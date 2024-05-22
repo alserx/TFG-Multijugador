@@ -65,16 +65,6 @@ public class MenuState implements State {
 
 	@Override
 	public void render(GraphicsController graphics) {
-//		drawMenuText(graphics, "Tic", 0xFFFF0000,
-//				(int) (gameController.getFRAME_WIDTH() * 0.5) - graphics.getStringWidth("TicTac", titleTextSize) / 2,
-//				(int) (gameController.getFRAME_HEIGHT() * 0.18), titleTextSize);
-//		drawMenuText(graphics, "Tac", 0xFF0000FF,
-//				(int) (gameController.getFRAME_WIDTH() * 0.5) - graphics.getStringWidth("Tac", titleTextSize) / 2,
-//				(int) (gameController.getFRAME_HEIGHT() * 0.18) + titleTextSize, titleTextSize);
-//		drawMenuText(graphics, "Toe!", 0xFFBD00FF,
-//				(int) (gameController.getFRAME_WIDTH() * 0.5) - graphics.getStringWidth("T", titleTextSize) / 2,
-//				(int) (gameController.getFRAME_HEIGHT() * 0.18) + titleTextSize * 2, titleTextSize);
-
 		drawMenuText(graphics, "Username:", 0xFF000000,
 				(int) (gameController.getFRAME_WIDTH() * 0.42) - graphics.getStringWidth("Username:", normalTextSize),
 				(int) (gameController.getFRAME_HEIGHT() * 0.38) + normalTextSize * 2, normalTextSize);
