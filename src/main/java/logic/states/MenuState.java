@@ -136,7 +136,6 @@ public class MenuState implements State {
 
 	@Override
 	public void receiveMessage(String message) {
-		// TODO Auto-generated method stub
-
+		return;
 	}
 }

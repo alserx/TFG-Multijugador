@@ -20,7 +20,6 @@ public class GameState implements State {
 	private GameController gameController;
 
 	// Game variables
-	private int playerTurn;
 	@Getter
 	@Setter
 	private Cell selectedCell = null;
@@ -29,17 +28,16 @@ public class GameState implements State {
 	private Board board;
 
 	// Server side variables
-	private int serverTurn;
-	private int totalTurns;
-	private int winner;
+	private String winner;
 	private String currentUser;
+	private boolean myTurn;
 
-	public GameState(GameController gameController, CellState playerFigure, int playerTurn, String currentUser) {
+	public GameState(GameController gameController, CellState playerFigure, boolean playerTurn, String currentUser) {
 		this.gameController = gameController;
 		this.playerFigure = playerFigure;
-		this.playerTurn = playerTurn;
+		this.myTurn = playerTurn;
 		this.currentUser = currentUser;
-
+		this.winner = null;
 		objects = new ArrayList<GameObject>();
 
 		// Create scene objects
@@ -50,8 +48,6 @@ public class GameState implements State {
 		// Add to the scene
 		objects.add(board);
 		objects.add(confirmButton);
-
-		// totalTurns++;
 	}
 
 	@Override
@@ -59,8 +55,13 @@ public class GameState implements State {
 		if (gameController.isPlaying())
 			objects.forEach(o -> o.update(deltaTime));
 		else {
-			gameController.getGameClient().close();
-			gameController.getStateController().pushState(new EndGameState(gameController, winner));
+			try {
+				Thread.sleep(1000);
+				gameController.getStateController().pushState(new EndGameState(gameController, winner));
+			} catch (Exception e) {
+				gameController.getStateController().pushState(new EndGameState(gameController, winner));
+			}
+
 		}
 
 	}
@@ -69,15 +70,11 @@ public class GameState implements State {
 	public void render(GraphicsController graphics) {
 		objects.forEach(o -> o.render(graphics));
 		playerTurnText(graphics);
-
-		graphics.drawText("Turno: " + totalTurns, 0xFF000000, (int) (gameController.getFRAME_WIDTH() * 0.05),
-				(int) (gameController.getFRAME_HEIGHT() * 0.5), 32);
-
 	}
 
 	@Override
 	public void handleInput(List<UserEvent> userEvents) {
-		if (gameController.isPlaying() && playerTurn == serverTurn)
+		if (gameController.isPlaying() && myTurn)
 			objects.forEach(o -> o.handleInput(userEvents));
 	}
 
@@ -104,82 +101,26 @@ public class GameState implements State {
 
 	private void confirmMovement() {
 		if (selectedCell != null && selectedCell.getState() != CellState.EMPTY) {
-			// this is managed by server
-//			if (playerTurn == 2) {
-//				totalTurns++;
-//			}
-//
-//			if (board.checkWin()) {
-//				winner = playerTurn;
-//				gameController.setPlaying(false);
-//			} else if (board.checkDraw()) {
-//				gameController.setPlaying(false);
-//			}
-
 			selectedCell.block();
-			toggleServerPlayer();
 
 			// Send message to server
-			// formato:
-			// {user} {figure} {board row} {board col} {next turn}
-			gameController.getGameClient().sendMessage(currentUser + " " + playerFigureString() + " "
-					+ selectedCell.getRow() + " " + selectedCell.getCol() + " " + serverTurn);
-
+			// formato: {board row} {board col}
+			gameController.getGameClient().sendMessage(selectedCell.getRow() + " " + selectedCell.getCol());
+			myTurn = false;
 			selectedCell = null;
 
 		}
 
 	}
 
-	private String playerFigureString() {
-		String parseFigure;
-
-		switch (playerFigure) {
-		case CROSS:
-			parseFigure = "X";
-			break;
-		case CIRCLE:
-			parseFigure = "O";
-			break;
-		default:
-			parseFigure = "none";
-			break;
-		}
-
-		return parseFigure;
-	}
-
-	private void toggleServerPlayer() {
-		if (serverTurn == 1)
-			serverTurn++;
-		else
-			serverTurn--;
-	}
-
 	// BUTTONS --------------------------------------------------------------------
-
-//	private GameButton initExitButton(GameController gameController) {
-//		int width = (int) (gameController.getFRAME_WIDTH() * 0.15);
-//		int height = (int) (gameController.getFRAME_HEIGHT() * 0.07);
-//		int x = (int) (gameController.getFRAME_WIDTH() * 0.85) - width / 2;
-//		int y = (int) (gameController.getFRAME_HEIGHT() * 0.7) - height / 2;
-//
-//		GameButton exitButton = new GameButton("FF", x, y, width, height, 0xDD1010, 0xFF1010, 0x000000, 20);
-//		exitButton.setAction(() -> {
-//			gameController.setRunning(false);
-//			// TODO desconectar cliente del servidor
-//		});
-//
-//		return exitButton;
-//	}
-
 	private GameButton initConfirmButton(GameController gameController) {
 		int width = (int) (gameController.getFRAME_WIDTH() * 0.15);
 		int height = (int) (gameController.getFRAME_HEIGHT() * 0.07);
 		int x = (int) (gameController.getFRAME_WIDTH() * 0.85) - width / 2;
 		int y = (int) (gameController.getFRAME_HEIGHT() * 0.4) - height / 2;
 
-		GameButton confirmButton = new GameButton("OK", x, y, width, height, 0x20DD20, 0x20FF20, 0x000000, 20);
+		GameButton confirmButton = new GameButton("OK", x, y, width, height, 0xFF20DD20, 0xFF20FF20, 0xFF000000, 20);
 
 		confirmButton.setAction(this::confirmMovement);
 		return confirmButton;
@@ -194,7 +135,6 @@ public class GameState implements State {
 		currentUser = splitMessage[0];
 		int row = Integer.parseInt(splitMessage[2]);
 		int col = Integer.parseInt(splitMessage[3]);
-		serverTurn = Integer.parseInt(splitMessage[4]);
 
 		if (splitMessage[1].equalsIgnoreCase("o"))
 			clickedCell = CellState.CIRCLE;
@@ -203,6 +143,13 @@ public class GameState implements State {
 
 		board.getCells()[row][col].setState(clickedCell);
 		board.getCells()[row][col].block();
+
+		myTurn = true;
+		// ha acabado la partida
+		if (splitMessage.length > 4) {
+			// no se juega
+			gameController.setPlaying(false);
+		}
 	}
 
 }

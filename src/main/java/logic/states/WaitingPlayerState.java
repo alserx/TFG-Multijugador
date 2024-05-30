@@ -52,17 +52,13 @@ public class WaitingPlayerState implements State {
 	public void receiveMessage(String message) {
 		String[] splitMessage = message.split(" ");
 		CellState playerFigure = CellState.EMPTY;
-		int playerTurn = 2;
+		boolean playerTurn = Boolean.parseBoolean(splitMessage[2]);
 		String starterUser = splitMessage[0];
 
 		if (splitMessage[1].equalsIgnoreCase("o"))
 			playerFigure = CellState.CIRCLE;
 		else if (splitMessage[1].equalsIgnoreCase("x"))
 			playerFigure = CellState.CROSS;
-
-		if (splitMessage.length > 2) {
-			playerTurn = 1;
-		}
 
 		gameController.setPlaying(true);
 		gameController.getStateController()

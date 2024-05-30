@@ -13,9 +13,9 @@ public class EndGameState implements State {
 	private ArrayList<GameObject> objects;
 	private GameController gameController;
 
-	private int playerVictory;
+	private String playerVictory;
 
-	public EndGameState(GameController gameController, int playerVictory) {
+	public EndGameState(GameController gameController, String playerVictory) {
 		this.gameController = gameController;
 		objects = new ArrayList<GameObject>();
 
@@ -49,7 +49,8 @@ public class EndGameState implements State {
 		int x = (int) (gameController.getFRAME_WIDTH() * 0.5) - width / 2,
 				y = (int) (gameController.getFRAME_HEIGHT() * 0.6) - height / 2;
 
-		GameButton exitButton = new GameButton("BACK TO MENU", x, y, width, height, 0xDD1010, 0xFF1010, 0x000000, 20);
+		GameButton exitButton = new GameButton("BACK TO MENU", x, y, width, height, 0xFFDD1010, 0xFFFF1010, 0xFF000000,
+				20);
 		exitButton.setAction(() -> {
 			// gameController.setRunning(false);
 
@@ -60,16 +61,14 @@ public class EndGameState implements State {
 		return exitButton;
 	}
 
-	private void drawResultText(int playerVictory, GraphicsController graphics) {
+	private void drawResultText(String playerVictory, GraphicsController graphics) {
 		String text = "Ha sido empate!";
 		int color = 0xABABAB;
 		int fontSize = 32;
 
-		if (playerVictory == 1) {
-			text = "Victoria de Jugador 1!";
+		if (playerVictory != null) {
+			text = "Ha ganado " + playerVictory + "!!";
 			color = 0x0000FF;
-		} else if (playerVictory == 2) {
-			text = "Victoria de Jugador 2!";
 			color = 0xFF0000;
 		}
 
@@ -81,8 +80,7 @@ public class EndGameState implements State {
 
 	@Override
 	public void receiveMessage(String message) {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 }

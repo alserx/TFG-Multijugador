@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import controller.GameController;
+
 public class GameClient {
 	private String serverIp;
 	private int serverPort;
@@ -14,7 +16,7 @@ public class GameClient {
 	private BufferedReader in;
 	private Thread listenerThread;
 
-	private MessageReceivedObserver messageObserver;
+	private GameController gameController;
 
 	public GameClient(String serverIP, int serverPort) {
 		this.serverIp = serverIP;
@@ -26,14 +28,14 @@ public class GameClient {
 	 * 
 	 * @return True if the connection was successful, false in other case
 	 */
-	public boolean init() {
+	public boolean init(GameController gameController) {
+		this.gameController = gameController;
 		try {
 			socket = new Socket(serverIp, serverPort);
 			out = new PrintWriter(socket.getOutputStream(), true);
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		} catch (IOException e) {
-			return true;
-			// return false; // TODO cambiar esto
+			return false;
 		}
 
 		listenerThread = new Thread(new ServerListener());
@@ -78,15 +80,6 @@ public class GameClient {
 	}
 
 	/**
-	 * Methos to register an observer when messages are received
-	 * 
-	 * @param observer The observer to be registered
-	 */
-	public void registerMessageObserver(MessageReceivedObserver observer) {
-		this.messageObserver = observer;
-	}
-
-	/**
 	 * Helper class that listens to the server and parses the messages coming from
 	 * the server
 	 * 
@@ -98,11 +91,13 @@ public class GameClient {
 		public void run() {
 			try {
 				String response;
-				while ((response = in.readLine()) != null) {
-					if (messageObserver != null) {
-						messageObserver.onMessageReceived(response);
+				while (!Thread.currentThread().isInterrupted()) {
+					if ((response = in.readLine()) != null && gameController != null) {
+						System.out.println("Server: " + response);
+						gameController.onMessageReceived(response);
 					}
 				}
+				System.out.println("Thread interrupted!!");
 			} catch (IOException e) {
 				System.err.println("Error reading from server: " + e.getMessage());
 			}

@@ -1,7 +1,6 @@
 package controller;
 
 import connection.GameClient;
-import connection.MessageReceivedObserver;
 import logic.states.MenuState;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +9,7 @@ import lombok.Setter;
  * The main Controller, it manages all the game loop: handle input, update and
  * render
  */
-public class GameController implements Runnable, MessageReceivedObserver {
+public class GameController implements Runnable {
 	// Controllers
 	@Getter
 	private StateController stateController;
@@ -42,7 +41,7 @@ public class GameController implements Runnable, MessageReceivedObserver {
 		graphicsController = new GraphicsController();
 		inputController = new InputController();
 		stateController = new StateController();
-		gameClient = new GameClient("127.0.0.1", 7777);
+		gameClient = new GameClient("127.0.0.1", 4000);
 	}
 
 	/**
@@ -52,10 +51,8 @@ public class GameController implements Runnable, MessageReceivedObserver {
 	 */
 	private boolean init() {
 		if (!graphicsController.init(this, FRAME_WIDTH, FRAME_HEIGHT) || !inputController.init(this)
-				|| !stateController.init(this) || !gameClient.init())
+				|| !stateController.init(this) || !gameClient.init(this))
 			return false;
-
-		gameClient.registerMessageObserver(this); // Registering this controller as message observer
 		return true;
 	}
 
@@ -125,7 +122,6 @@ public class GameController implements Runnable, MessageReceivedObserver {
 		} while (graphicsController.getFrame().getBufferStrategy().contentsLost());
 	}
 
-	@Override
 	public void onMessageReceived(String message) {
 		System.out.println("Received message from server: [" + message + "]");
 
