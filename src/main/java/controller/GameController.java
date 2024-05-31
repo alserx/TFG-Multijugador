@@ -42,7 +42,7 @@ public class GameController implements Runnable {
 		graphicsController = new GraphicsController();
 		inputController = new InputController();
 		stateController = new StateController();
-		gameClient = new GameClient("192.168.0.20", 8080);
+		gameClient = new GameClient("localhost", 8080);
 	}
 
 	/**
