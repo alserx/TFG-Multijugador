@@ -35,6 +35,8 @@ public class GameClient {
 			out = new PrintWriter(socket.getOutputStream(), true);
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		} catch (IOException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
 			return false;
 		}
 

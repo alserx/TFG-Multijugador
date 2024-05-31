@@ -2,6 +2,7 @@ package controller;
 
 import connection.GameClient;
 import logic.states.MenuState;
+import logic.states.State;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -41,7 +42,7 @@ public class GameController implements Runnable {
 		graphicsController = new GraphicsController();
 		inputController = new InputController();
 		stateController = new StateController();
-		gameClient = new GameClient("127.0.0.1", 4000);
+		gameClient = new GameClient("192.168.0.20", 8080);
 	}
 
 	/**
@@ -51,7 +52,7 @@ public class GameController implements Runnable {
 	 */
 	private boolean init() {
 		if (!graphicsController.init(this, FRAME_WIDTH, FRAME_HEIGHT) || !inputController.init(this)
-				|| !stateController.init(this) || !gameClient.init(this))
+				|| !stateController.init(this))
 			return false;
 		return true;
 	}
@@ -127,5 +128,13 @@ public class GameController implements Runnable {
 
 		// Send message to the current state
 		stateController.currentState().receiveMessage(message);
+	}
+	
+	public void returnInitialState() {
+		gameClient.close();
+		stateController.clearStates();
+		State newState = new MenuState(this);
+		stateController.pushState(newState);
+		
 	}
 }

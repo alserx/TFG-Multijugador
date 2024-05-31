@@ -55,11 +55,12 @@ public class GameState implements State {
 		if (gameController.isPlaying())
 			objects.forEach(o -> o.update(deltaTime));
 		else {
+			State newState = new EndGameState(gameController, winner);
 			try {
 				Thread.sleep(1000);
-				gameController.getStateController().pushState(new EndGameState(gameController, winner));
+				gameController.getStateController().pushState(newState);
 			} catch (Exception e) {
-				gameController.getStateController().pushState(new EndGameState(gameController, winner));
+				gameController.getStateController().pushState(newState);
 			}
 
 		}
@@ -131,7 +132,7 @@ public class GameState implements State {
 		String[] splitMessage = message.split(" ");
 
 		CellState clickedCell = CellState.EMPTY;
-
+		
 		currentUser = splitMessage[0];
 		int row = Integer.parseInt(splitMessage[2]);
 		int col = Integer.parseInt(splitMessage[3]);
@@ -147,9 +148,15 @@ public class GameState implements State {
 		myTurn = true;
 		// ha acabado la partida
 		if (splitMessage.length > 4) {
-			// no se juega
+			
+			if(!splitMessage[splitMessage.length-1].equals("null")) {
+				this.winner = splitMessage[splitMessage.length-1];
+			}
+			
 			gameController.setPlaying(false);
 		}
 	}
+	
+	
 
 }

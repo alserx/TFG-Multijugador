@@ -54,8 +54,7 @@ public class EndGameState implements State {
 		exitButton.setAction(() -> {
 			// gameController.setRunning(false);
 
-			gameController.getStateController().popState();
-			gameController.getStateController().popState();
+			gameController.returnInitialState();
 		});
 
 		return exitButton;
@@ -63,13 +62,13 @@ public class EndGameState implements State {
 
 	private void drawResultText(String playerVictory, GraphicsController graphics) {
 		String text = "Ha sido empate!";
-		int color = 0xABABAB;
+		int color = 0xFFABABAB;
 		int fontSize = 32;
 
 		if (playerVictory != null) {
 			text = "Ha ganado " + playerVictory + "!!";
-			color = 0x0000FF;
-			color = 0xFF0000;
+			color = 0xFF0000FF;
+			color = 0xFFFF0000;
 		}
 
 		graphics.drawText(text, color,

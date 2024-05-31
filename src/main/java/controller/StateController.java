@@ -63,6 +63,7 @@ public class StateController {
 	 * @return true if push is susccessful
 	 */
 	public boolean pushState(State newState) {
+		System.out.println("Pushing new state"+ newState);
 		if (states.push(newState) != null)
 			return true;
 

@@ -22,6 +22,7 @@ public class MenuState implements State {
 	GameTextField userTextField;
 
 	public MenuState(GameController gameController) {
+		gameController.getGameClient().init(gameController);
 		objects = new ArrayList<GameObject>();
 		this.gameController = gameController;
 
@@ -97,9 +98,11 @@ public class MenuState implements State {
 		playButton.setAction(() -> {
 			if (!userTextField.getText().isEmpty()) {
 				enteredUsername = true;
+				
+				State newState = new WaitingPlayerState(gameController);
 				// mandar mensaje al server
 				gameController.getGameClient().sendMessage(userTextField.getText());
-				gameController.getStateController().pushState(new WaitingPlayerState(gameController));
+				gameController.getStateController().pushState(newState);
 			} else {
 				enteredUsername = false;
 				System.err.println("No hay nombre de usuario!");
