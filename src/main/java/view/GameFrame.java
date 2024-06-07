@@ -29,10 +29,11 @@ public class GameFrame extends JFrame {
 	 */
 	public boolean init(int width, int height) {
 		setSize(width, height);
-
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
 		setVisible(true);
 		JFrame.setDefaultLookAndFeelDecorated(true);
+		setResizable(false);
 
 		// Renderizado activo, le decimos cuando se pinta
 		setIgnoreRepaint(true);
@@ -75,7 +76,7 @@ public class GameFrame extends JFrame {
 	}
 
 	/**
-	 * @return The panel heught
+	 * @return The panel height
 	 */
 	public int getPanelHeight() {
 		return (int) getContentPane().getSize().getHeight();

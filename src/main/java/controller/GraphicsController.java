@@ -2,11 +2,10 @@ package controller;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
-
-import javax.swing.JFrame;
 
 import lombok.Getter;
 import view.GameFrame;
@@ -17,6 +16,7 @@ public class GraphicsController {
 	private GameFrame frame;
 
 	// Para pintar graficos con Swing
+	@Getter
 	private Graphics2D graphics;
 
 	/**
@@ -37,23 +37,21 @@ public class GraphicsController {
 
 		frame.addMouseListener(mainController.getInputController());
 		frame.addMouseMotionListener(mainController.getInputController());
+		frame.addKeyListener(mainController.getInputController());
 
 		int posX = centerPoint.x - width / 2;
 		int posY = centerPoint.y - height / 2;
 
 		frame.setLocation(posX, posY);
+		boolean initResult = frame.init(width, height);
 
-		return frame.init(width, height);
+		return initResult;
 	}
 
 	/**
 	 * Prepara el siguiente frame para su pintado
 	 */
 	public void prepareFrame() {
-//		// Espera hasta que se genere un BufferStrategy
-//		while (frame.getBufferStrategy() == null)
-//			;
-
 		graphics = (Graphics2D) frame.getStrategy().getDrawGraphics();
 	}
 
@@ -75,7 +73,7 @@ public class GraphicsController {
 	 * @param strokeWidth Ancho de la linea de dibujado
 	 */
 	public void drawCircle(int color, int x, int y, int diameter, int strokeWidth) {
-		graphics.setColor(new Color(color));
+		setColor(color);
 		graphics.setStroke(new BasicStroke(strokeWidth));
 
 		graphics.drawOval(x, y, diameter, diameter);
@@ -91,10 +89,34 @@ public class GraphicsController {
 	 * @param strokeWidth Ancho de la linea de dibujado
 	 */
 	public void drawSquare(int color, int x, int y, int side, int strokeWidth) {
-		graphics.setColor(new Color(color));
+		setColor(color);
 		graphics.setStroke(new BasicStroke(strokeWidth));
 
 		graphics.drawRect(x, y, side, side);
+	}
+
+	/**
+	 * Dibuja un rectangulo
+	 * 
+	 * @param color       Color de la linea
+	 * @param x           Posicion en el eje X
+	 * @param y           Posicion en el eje Y
+	 * @param side        Tamaño del lado del cuadrado
+	 * @param strokeWidth Ancho de la linea de dibujado
+	 */
+	public void drawRect(int color, int x, int y, int width, int height, int strokeWidth) {
+		setColor(color);
+		graphics.setStroke(new BasicStroke(strokeWidth));
+
+		graphics.drawRect(x, y, width, height);
+	}
+
+	public void drawBorderedRect(int backgroundColor, int borderColor, int x, int y, int width, int height,
+			int strokeWidth) {
+		setColor(backgroundColor);
+		graphics.fillRect(x, y, width, height);
+
+		drawRect(borderColor, x, y, width, height, strokeWidth);
 	}
 
 	/**
@@ -107,11 +129,18 @@ public class GraphicsController {
 	 * @param strokeWidth Ancho de la linea de dibujado
 	 */
 	public void drawCross(int color, int x, int y, int size, int strokeWidth) {
-		graphics.setColor(new Color(color));
+		setColor(color);
 		graphics.setStroke(new BasicStroke(strokeWidth));
 
 		graphics.drawLine(x, y, x + size, y + size);
 		graphics.drawLine(x, y + size, x + size, y);
+	}
+
+	public void drawLine(int color, int x1, int y1, int x2, int y2) {
+		setColor(color);
+		graphics.setStroke(new BasicStroke(1));
+
+		graphics.drawLine(x1, y1, x2, y2);
 	}
 
 	int getWidth() {
@@ -120,5 +149,40 @@ public class GraphicsController {
 
 	int getHeight() {
 		return frame.getPanelHeight();
+	}
+
+	public void drawText(String text, int color, int x, int y, int size) {
+		setColor(color);
+
+		setFontSize((float) size);
+
+		graphics.drawString(text, x, y);
+	}
+
+	public void setFontSize(float size) {
+		Font resizedFont = graphics.getFont().deriveFont(size);
+		graphics.setFont(resizedFont);
+	}
+
+	public int getStringWidth(String text, int fontSize) {
+		setFontSize((float) fontSize);
+		return graphics.getFontMetrics().stringWidth(text);
+	}
+
+	public int getStringHeight(int fontSize) {
+		setFontSize((float) fontSize);
+		return graphics.getFontMetrics().getHeight();
+	}
+
+	public void clear() {
+		graphics.clearRect(0, 0, getWidth(), getHeight());
+	}
+
+	private void setColor(int rgba) {
+		int alpha = (rgba >> 24) & 0xFF;
+		int red = (rgba >> 16) & 0xFF;
+		int green = (rgba >> 8) & 0xFF;
+		int blue = rgba & 0xFF;
+		graphics.setColor(new Color(red, green, blue, alpha));
 	}
 }

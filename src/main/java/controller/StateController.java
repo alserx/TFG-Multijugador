@@ -2,7 +2,6 @@ package controller;
 
 import java.util.Stack;
 
-import logic.states.MenuState;
 import logic.states.State;
 
 public class StateController {
@@ -28,8 +27,6 @@ public class StateController {
 		this.gameController = gameController;
 		if (this.gameController == null)
 			return false;
-
-		states.push(new MenuState(this.gameController));
 
 		return true;
 	}
@@ -66,6 +63,7 @@ public class StateController {
 	 * @return true if push is susccessful
 	 */
 	public boolean pushState(State newState) {
+		System.out.println("Pushing new state"+ newState);
 		if (states.push(newState) != null)
 			return true;
 

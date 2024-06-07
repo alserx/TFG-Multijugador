@@ -3,15 +3,13 @@ package logic.game.objects;
 import java.awt.Point;
 import java.util.List;
 
-import controller.GameController;
 import controller.GraphicsController;
-import logic.GameObject;
 import logic.enums.CellState;
 import logic.enums.UserEvent;
+import logic.states.GameState;
 import lombok.Getter;
-import lombok.Setter;
 
-public class Board implements GameObject {
+public class Board extends AbstractGameObject {
 
 	// Filas y columnas
 	private final int BOARD_ROWS = 3, BOARD_COLS = 3;
@@ -20,11 +18,6 @@ public class Board implements GameObject {
 	@Getter
 	private Cell[][] cells;
 
-	// Posicion del tablero en la pantalla
-	@Getter
-	@Setter
-	private Point position;
-
 	// Dimensiones del tablero
 	@Getter
 	private final int size;
@@ -32,56 +25,59 @@ public class Board implements GameObject {
 	// Dimensiones de las celdas
 	private int cellSize;
 
-	private Board(GameController gameController) {
+	private Board(GameState game, int size) {
 		cells = new Cell[BOARD_ROWS][BOARD_COLS];
 		position = new Point();
-		size = 250;
+		this.size = size;
 	}
 
-	public Board(int x, int y, GameController gameController) {
-		this(gameController);
+	public Board(int x, int y, GameState game, int size) {
+		this(game, size);
 		this.position = new Point(x - size / 3, y - size / 3);
 
 		cellSize = (int) (Math.min(size / BOARD_COLS, size / BOARD_ROWS));
 
-		initBoard(gameController);
+		initBoard(game);
 	}
 
-	public Board(Point position, GameController gameController) {
-		this(gameController);
+	public Board(Point position, GameState game, int size) {
+		this(game, size);
 
 		this.position.x = position.x - size / 3;
 		this.position.y = position.y - size / 3;
 
-		initBoard(gameController);
+		initBoard(game);
 	}
 
 	@Override
 	public void update(double deltaTime) {
-		if (checkWin())
-			System.out.println("Victoria!!");
-
-		for (int row = 0; row < BOARD_ROWS; row++) {
-			for (int col = 0; col < BOARD_COLS; col++) {
-				cells[row][col].update(deltaTime);
+		if (this.isActive()) {
+			for (int row = 0; row < BOARD_ROWS; row++) {
+				for (int col = 0; col < BOARD_COLS; col++) {
+					cells[row][col].update(deltaTime);
+				}
 			}
 		}
 	}
 
 	@Override
 	public void render(GraphicsController graphics) {
-		for (int row = 0; row < BOARD_ROWS; row++) {
-			for (int col = 0; col < BOARD_COLS; col++) {
-				cells[row][col].render(graphics);
+		if (this.isActive()) {
+			for (int row = 0; row < BOARD_ROWS; row++) {
+				for (int col = 0; col < BOARD_COLS; col++) {
+					cells[row][col].render(graphics);
+				}
 			}
 		}
 	}
 
 	@Override
 	public void handleInput(List<UserEvent> userEvents) {
-		for (int row = 0; row < BOARD_ROWS; row++) {
-			for (int col = 0; col < BOARD_COLS; col++) {
-				cells[row][col].handleInput(userEvents);
+		if (this.isActive()) {
+			for (int row = 0; row < BOARD_ROWS; row++) {
+				for (int col = 0; col < BOARD_COLS; col++) {
+					cells[row][col].handleInput(userEvents);
+				}
 			}
 		}
 	}
@@ -91,12 +87,12 @@ public class Board implements GameObject {
 	 * 
 	 * @param gameController the GameController to extract the frame information
 	 */
-	private void initBoard(GameController gameController) {
+	private void initBoard(GameState game) {
 
 		for (int row = 0; row < BOARD_ROWS; row++) {
 			for (int col = 0; col < BOARD_COLS; col++) {
 				cells[row][col] = new Cell((int) (row * size / BOARD_ROWS + position.getX()),
-						(int) (col * size / BOARD_COLS + position.getY()), cellSize, gameController);
+						(int) (col * size / BOARD_COLS + position.getY()), cellSize, row, col, game);
 			}
 		}
 	}
@@ -250,5 +246,24 @@ public class Board implements GameObject {
 	 */
 	public boolean checkWin() {
 		return checkRows() || checkCols() || checkDiagonals();
+	}
+
+	/**
+	 * Check if is a tie
+	 * 
+	 * @return true if there is a tie false in other case
+	 */
+	public boolean checkDraw() {
+		for (int row = 0; row < BOARD_ROWS; row++) {
+			for (int col = 0; col < BOARD_COLS; col++) {
+				if (cells[row][col].getState() == CellState.EMPTY)
+					return false;
+			}
+		}
+
+		if (checkWin())
+			return false;
+
+		return true;
 	}
 }

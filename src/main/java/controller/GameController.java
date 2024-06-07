@@ -1,6 +1,8 @@
 package controller;
 
-import logic.states.GameState;
+import connection.GameClient;
+import logic.states.MenuState;
+import logic.states.State;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,25 +18,31 @@ public class GameController implements Runnable {
 	private InputController inputController;
 	@Getter
 	private GraphicsController graphicsController;
+	@Getter
+	private GameClient gameClient;
 
 	// View
 	@Getter
-	private final int FRAME_WIDTH = 600, FRAME_HEIGHT = 400;
+	private final int FRAME_WIDTH = 800, FRAME_HEIGHT = 600;
 
 	// Time
 	private long lastFrameTime = 0;
 	private long currentTime = 0;
 	private double deltaTime = 0;
 
-	// Game variable
+	// Game loop
 	@Getter
 	@Setter
-	private int playerTurn = 1;
+	private boolean running;
+	@Getter
+	@Setter
+	private boolean playing;
 
 	public GameController() {
 		graphicsController = new GraphicsController();
 		inputController = new InputController();
 		stateController = new StateController();
+		gameClient = new GameClient("localhost", 8080);
 	}
 
 	/**
@@ -46,7 +54,6 @@ public class GameController implements Runnable {
 		if (!graphicsController.init(this, FRAME_WIDTH, FRAME_HEIGHT) || !inputController.init(this)
 				|| !stateController.init(this))
 			return false;
-
 		return true;
 	}
 
@@ -56,23 +63,30 @@ public class GameController implements Runnable {
 		if (!init())
 			return;
 
+		paint();
+
 		// Inicializar estado
-		stateController.pushState(new GameState(this));
+		stateController.pushState(new MenuState(this));
+		running = true;
 
 		// Bucle principal
-		while (true) {
+		while (running) {
 
 			updateDeltaTime();
-
-			// Llama al input del estado
-			stateController.currentState().handleInput(inputController.getUserEvents());
 
 			// Actualiza el estado
 			stateController.currentState().update(deltaTime);
 
 			// Pinta el estado usando una estrategia de doble bufer
 			paint();
+
+			// Llama al input del estado
+			stateController.currentState().handleInput(inputController.getUserEvents());
 		}
+
+		stateController.clearStates();
+		graphicsController.getFrame().setVisible(false);
+		graphicsController.getFrame().dispose();
 	}
 
 	/**
@@ -94,8 +108,11 @@ public class GameController implements Runnable {
 			do {
 				graphicsController.prepareFrame();
 				try {
+					graphicsController.clear();
+
 					// Render de la logica
-					stateController.currentState().render(graphicsController);
+					if (stateController.currentState() != null)
+						stateController.currentState().render(graphicsController);
 				}
 
 				finally {
@@ -104,5 +121,20 @@ public class GameController implements Runnable {
 			} while (graphicsController.getFrame().getBufferStrategy().contentsRestored());
 			graphicsController.getFrame().getBufferStrategy().show();
 		} while (graphicsController.getFrame().getBufferStrategy().contentsLost());
+	}
+
+	public void onMessageReceived(String message) {
+		System.out.println("Received message from server: [" + message + "]");
+
+		// Send message to the current state
+		stateController.currentState().receiveMessage(message);
+	}
+	
+	public void returnInitialState() {
+		gameClient.close();
+		stateController.clearStates();
+		State newState = new MenuState(this);
+		stateController.pushState(newState);
+		
 	}
 }
