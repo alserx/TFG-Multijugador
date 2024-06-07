@@ -62,17 +62,15 @@ public class EndGameState implements State {
 
 	private void drawResultText(String playerVictory, GraphicsController graphics) {
 		String text = "Ha sido empate!";
-		int color = 0xFFABABAB;
+		int color = 0xFF3A3A3A;
 		int fontSize = 32;
 
 		if (playerVictory != null) {
 			text = "Ha ganado " + playerVictory + "!!";
-			color = 0xFF0000FF;
-			color = 0xFFFF0000;
 		}
 
 		graphics.drawText(text, color,
-				(int) (gameController.getFRAME_WIDTH() * 0.5) - graphics.getStringWidth(text, fontSize),
+				(int) (gameController.getFRAME_WIDTH() * 0.5) - graphics.getStringWidth(text, fontSize) / 2,
 				(int) (gameController.getFRAME_HEIGHT() * 0.5), fontSize);
 
 	}

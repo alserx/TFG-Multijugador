@@ -99,7 +99,6 @@ public class GameClient {
 						gameController.onMessageReceived(response);
 					}
 				}
-				System.out.println("Thread interrupted!!");
 			} catch (IOException e) {
 				System.err.println("Error reading from server: " + e.getMessage());
 			}

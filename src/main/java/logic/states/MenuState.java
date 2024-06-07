@@ -71,7 +71,7 @@ public class MenuState implements State {
 				(int) (gameController.getFRAME_HEIGHT() * 0.38) + normalTextSize * 2, normalTextSize);
 
 		if (!enteredUsername)
-			drawMenuText(graphics, "Introduce a valid username", 0xFFFF0000,
+			drawMenuText(graphics, "Introduce a valid username! No spaces allowed", 0xFFFF0000,
 					(int) (gameController.getFRAME_WIDTH() * 0.5)
 							- graphics.getStringWidth("Introduce a valid username!", smallTextSize) / 2,
 					(int) (gameController.getFRAME_HEIGHT() * 0.52) + smallTextSize * 2, smallTextSize);
@@ -96,9 +96,9 @@ public class MenuState implements State {
 
 		GameButton playButton = new GameButton("PLAY", x, y, width, height, 0xFF20DD20, 0xFF20FF20, 0xFF000000, 20);
 		playButton.setAction(() -> {
-			if (!userTextField.getText().isEmpty()) {
+			if (!userTextField.getText().isEmpty() && !userTextField.getText().contains(" ")) {
 				enteredUsername = true;
-				
+
 				State newState = new WaitingPlayerState(gameController);
 				// mandar mensaje al server
 				gameController.getGameClient().sendMessage(userTextField.getText());

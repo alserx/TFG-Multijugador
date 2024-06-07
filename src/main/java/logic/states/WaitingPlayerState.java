@@ -51,23 +51,22 @@ public class WaitingPlayerState implements State {
 	@Override
 	public void receiveMessage(String message) {
 		System.out.println(message);
-		
+
 		String[] splitMessage = message.split(" ");
 		CellState playerFigure = CellState.EMPTY;
-		boolean playerTurn = Boolean.parseBoolean(splitMessage[2]);
-		String starterUser = splitMessage[0];
+		String playersMatch = splitMessage[0] + " VS " + splitMessage[1];
+		boolean playerTurn = Boolean.parseBoolean(splitMessage[3]);
 
-		if (splitMessage[1].equalsIgnoreCase("o"))
+		if (splitMessage[2].equalsIgnoreCase("o"))
 			playerFigure = CellState.CIRCLE;
-		else if (splitMessage[1].equalsIgnoreCase("x"))
+		else if (splitMessage[2].equalsIgnoreCase("x"))
 			playerFigure = CellState.CROSS;
-		
-		State newState = new GameState(gameController, playerFigure, playerTurn, starterUser);
+
+		State newState = new GameState(gameController, playerFigure, playerTurn, playersMatch);
 
 		gameController.setPlaying(true);
-		gameController.getStateController()
-				.pushState(newState);
-		
+		gameController.getStateController().pushState(newState);
+
 	}
 
 }

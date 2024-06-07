@@ -29,14 +29,14 @@ public class GameState implements State {
 
 	// Server side variables
 	private String winner;
-	private String currentUser;
+	private String playersMatch;
 	private boolean myTurn;
 
-	public GameState(GameController gameController, CellState playerFigure, boolean playerTurn, String currentUser) {
+	public GameState(GameController gameController, CellState playerFigure, boolean playerTurn, String playersMatch) {
 		this.gameController = gameController;
 		this.playerFigure = playerFigure;
 		this.myTurn = playerTurn;
-		this.currentUser = currentUser;
+		this.playersMatch = playersMatch;
 		this.winner = null;
 		objects = new ArrayList<GameObject>();
 
@@ -58,19 +58,20 @@ public class GameState implements State {
 			State newState = new EndGameState(gameController, winner);
 			try {
 				Thread.sleep(1000);
-				gameController.getStateController().pushState(newState);
 			} catch (Exception e) {
-				gameController.getStateController().pushState(newState);
+				System.out.println(e.getMessage());
+				Thread.currentThread().interrupt();
+				// gameController.getStateController().pushState(newState);
 			}
-
+			gameController.getStateController().pushState(newState);
 		}
-
 	}
 
 	@Override
 	public void render(GraphicsController graphics) {
 		objects.forEach(o -> o.render(graphics));
 		playerTurnText(graphics);
+		playerNamesText(graphics);
 	}
 
 	@Override
@@ -80,7 +81,7 @@ public class GameState implements State {
 	}
 
 	private void playerTurnText(GraphicsController graphics) {
-		String text = "Turno del jugador " + currentUser;
+		String text = myTurn ? "It is your turn" : "Waiting for the rivals turn";
 		int color = 0;
 
 		switch (playerFigure) {
@@ -97,6 +98,19 @@ public class GameState implements State {
 
 		graphics.drawText(text, color, (int) (gameController.getFRAME_WIDTH() * 0.05),
 				(int) (gameController.getFRAME_HEIGHT() * 0.15), 32);
+
+	}
+
+	private void playerNamesText(GraphicsController graphics) {
+		String[] splittedText = playersMatch.split(" ");
+		int color = 0xFF000000;
+
+		int i = 0, textSize = 32;
+		for (String text : splittedText) {
+			graphics.drawText(text, color, (int) (gameController.getFRAME_WIDTH() * 0.05),
+					(int) (gameController.getFRAME_HEIGHT() * 0.45 + textSize * i), textSize);
+			i++;
+		}
 
 	}
 
@@ -129,17 +143,17 @@ public class GameState implements State {
 
 	@Override
 	public void receiveMessage(String message) {
+		// formato: {figure} {board row} {board col} {ganador}
 		String[] splitMessage = message.split(" ");
 
 		CellState clickedCell = CellState.EMPTY;
-		
-		currentUser = splitMessage[0];
-		int row = Integer.parseInt(splitMessage[2]);
-		int col = Integer.parseInt(splitMessage[3]);
 
-		if (splitMessage[1].equalsIgnoreCase("o"))
+		int row = Integer.parseInt(splitMessage[1]);
+		int col = Integer.parseInt(splitMessage[2]);
+
+		if (splitMessage[0].equalsIgnoreCase("o"))
 			clickedCell = CellState.CIRCLE;
-		else if (splitMessage[1].equalsIgnoreCase("x"))
+		else if (splitMessage[0].equalsIgnoreCase("x"))
 			clickedCell = CellState.CROSS;
 
 		board.getCells()[row][col].setState(clickedCell);
@@ -147,16 +161,14 @@ public class GameState implements State {
 
 		myTurn = true;
 		// ha acabado la partida
-		if (splitMessage.length > 4) {
-			
-			if(!splitMessage[splitMessage.length-1].equals("null")) {
-				this.winner = splitMessage[splitMessage.length-1];
+		if (splitMessage.length > 3) {
+
+			if (!splitMessage[splitMessage.length - 1].equals("null")) {
+				this.winner = splitMessage[splitMessage.length - 1];
 			}
-			
+
 			gameController.setPlaying(false);
 		}
 	}
-	
-	
 
 }
